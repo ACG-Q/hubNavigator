@@ -48,9 +48,10 @@ jobs:
         run: node scripts/build_site_all.js
 
       - name: 🚀 Commit & Push Changes
-        # 将最新的站点数据同步回 main 分支
+        # 将最新的站点数据同步回 master 分支
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "🤖 Auto: Health check update & Data sync [skip ci]"
-          branch: main
+          branch: master
           file_pattern: 'data/items/*.json data/site_all.json public/sitemap.xml'
+
