@@ -1,20 +1,24 @@
 name: 🕸️ Core Automation (Health Check & Sync)
 
+# 触发条件：
+# 1. 定时运行（每 30 分钟）
+# 2. 手动启动
+# 3. 当 data/items 目录下的 JSON 或脚本发生变化时
 on:
   schedule:
-    - cron: '*/30 * * * *' # Every 30 minutes
-  workflow_dispatch: # Manual trigger
+    - cron: '*/30 * * * *'
+  workflow_dispatch:
   push:
     paths:
-      - 'data/items/**.json' # When items update manually
+      - 'data/items/**.json'
       - 'scripts/**'
 
 jobs:
   automation:
     runs-on: ubuntu-latest
     permissions:
-      contents: write # To push changes
-      issues: write   # To edit issues
+      contents: write # 提交数据同步的变化
+      issues: write   # 编辑 Issue 状态（如健康检查结果）
 
     steps:
       - name: Checkout Code
@@ -34,14 +38,17 @@ jobs:
           node-version: '20'
 
       - name: 🏥 Run Health Check
+        # 执行巡检脚本，检查链接有效性并同步 Issue 标签
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python scripts/health_check.py
 
       - name: 🔨 Build Site Data & Sitemap
+        # 重新构建聚合的 JSON 索引和站点地图
         run: node scripts/build_site_all.js
 
       - name: 🚀 Commit & Push Changes
+        # 将最新的站点数据同步回 main 分支
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "🤖 Auto: Health check update & Data sync [skip ci]"

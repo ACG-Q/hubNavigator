@@ -1,0 +1,45 @@
+name: 📝 Issue Parser
+
+# 触发条件：当 Issue 被创建、标签变动或主体被编辑时运行
+on:
+  issues:
+    types: [opened, edited, labeled]
+
+jobs:
+  parse:
+    # 过滤器：仅处理带有特定标签的 Issue
+    if: contains(github.event.issue.labels.*.name, 'kind:site') || contains(github.event.issue.labels.*.name, 'kind:domain-migration') || contains(github.event.issue.labels.*.name, 'kind:correction')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Run Parser
+        # 运行解析脚本，将 Issue 的 Markdown 表单转换为带有 Front Matter 的格式
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_LABELS: ${{ join(github.event.issue.labels.*.name, ',') }}
+          ISSUE_ID: ${{ github.event.issue.number }}
+        run: node scripts/parser.js
+
+      - name: Commit Changes
+        # 将生成的 JSON 数据文件同步回仓库
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "🤖 Auto: Normalize Issue #${{ github.event.issue.number }} to Front Matter"
+          file_pattern: 'data/items/*.json'

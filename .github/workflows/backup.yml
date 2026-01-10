@@ -1,8 +1,9 @@
 name: 📦 Weekly Data Backup
 
+# 触发条件：每周日零点定时运行，或手动启动
 on:
   schedule:
-    - cron: '0 0 * * 0' # Every Sunday at midnight
+    - cron: '0 0 * * 0'
   workflow_dispatch:
 
 jobs:
@@ -16,6 +17,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run Backup Script
+        # 执行备份脚本，将数据归档并在独立的 backup 分支保留副本
         run: |
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"

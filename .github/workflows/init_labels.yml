@@ -1,0 +1,31 @@
+name: 🔧 Project Initialization (Labels)
+
+# 触发条件：
+# 1. 推送指定文件时
+# 2. 手动启动
+on:
+  push:
+    paths:
+      - 'scripts/manage_labels.py'
+  workflow_dispatch:
+
+jobs:
+  init:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install Dependencies
+        run: pip install -r requirements.txt
+
+      - name: Setup Labels
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: python scripts/manage_labels.py

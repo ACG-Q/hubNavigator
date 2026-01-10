@@ -1,11 +1,13 @@
 name: 💬 ChatOps
 
+# 触发条件：当有人在 Issue 下发表评论时运行
 on:
   issue_comment:
     types: [created]
 
 jobs:
   ops:
+    # 过滤器：仅当评论以 "/" 开头（表示指令）且不是在 PR 中时运行
     if: startswith(github.event.comment.body, '/') && !github.event.issue.pull_request
     runs-on: ubuntu-latest
     permissions:
@@ -25,6 +27,7 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Run Ops Script
+        # 执行管理员指令处理脚本（如 /approve, /update, /category）
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ISSUE_NUMBER: ${{ github.event.issue.number }}

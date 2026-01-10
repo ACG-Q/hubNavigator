@@ -1,5 +1,6 @@
 name: 🚀 Deploy to Pages
 
+# 触发条件：当 main 分支有代码推送到仓库时
 on:
   push:
     branches: [ "main" ]
@@ -31,18 +32,21 @@ jobs:
         run: npm ci
 
       - name: Unsafe Perm Check
-        # Vite sometimes needs this for esbuild
+        # 执行项目构建（使用 Vite）
         run: npm run build
 
       - name: Generate SSG Pages
+        # 执行静态生成脚本，为每个站点生成独立的详情页，确保 SEO 友好
         run: node scripts/ssg_generator.js
 
       - name: Upload artifact
+        # 上传编译产物到 GitHub Pages
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./dist
 
   deploy:
+    # 部署到 GitHub Pages 托管环境
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

@@ -26,12 +26,13 @@ def main():
         return
 
     # Security Check: Only Owner or specific users can execute Ops
-    # For MVP, we assume Repo Owner = Admin. 
+    # 逻辑：我们将仓库地址（如 ACG-Q/hubNavigator）的第一部分提取出来作为 Owner
     owner_login = REPO_NAME.split('/')[0]
     
-    # Optional: Allow hardcoded list
+    # 管理员列表（目前只包含仓库所有者）
     ADMINS = [owner_login]
     
+    # 判断发表评论的人 (COMMENT_AUTHOR) 是否在管理员列表中
     if COMMENT_AUTHOR not in ADMINS:
         print(f"Skipping: User '{COMMENT_AUTHOR}' is not authorized.")
         return
@@ -42,6 +43,8 @@ def main():
         handle_update(issue)
     elif COMMENT_BODY.startswith('/category'):
         handle_category(issue, COMMENT_BODY)
+    elif COMMENT_BODY.startswith('/label'):
+        handle_label(issue, COMMENT_BODY)
     else:
         print(f"Unknown command: {COMMENT_BODY}")
 
@@ -103,6 +106,22 @@ def handle_category(issue, command):
         issue.edit(body=frontmatter.dumps(post))
     except Exception as e:
          print(f"Error changing category: {e}")
+
+def handle_label(issue, command):
+    # 用法示例: /label tag1 tag2 tag3
+    # 它会将指令之后的所有单词都作为标签添加
+    parts = command.split()
+    if len(parts) < 2:
+        return
+        
+    labels_to_add = parts[1:]
+    print(f"Adding labels to issue #{issue.number}: {labels_to_add}")
+    try:
+        # PyGithub 的 add_to_labels 支持一次传入多个标签
+        issue.add_to_labels(*labels_to_add)
+        issue.create_comment(f"✅ **Labels Added:** {', '.join([f'`{l}`' for l in labels_to_add])}")
+    except Exception as e:
+        issue.create_comment(f"❌ Error adding labels: {e}")
 
 if __name__ == "__main__":
     main()
