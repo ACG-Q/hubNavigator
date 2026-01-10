@@ -1,0 +1,66 @@
+name: "🛠️ 报错/修正 (Site Correction)"
+description: "发现站点信息有误、链接失效或需要更新介绍？"
+title: "[Correction]: "
+labels: ["kind:correction", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感谢您帮助我们完善导航站！请详细描述需要修正的内容。
+
+  - type: input
+    id: name
+    attributes:
+      label: 站点名称/ID (Site Name or ID)
+      description: 请提供要修正的站点名称或 ID
+      placeholder: "Gemini"
+    validations:
+      required: true
+
+  - type: input
+    id: url
+    attributes:
+      label: 链接地址 (URL)
+      description: 如果链接失效，请在此处填写正确的链接
+      placeholder: "https://new-link.com"
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: 核心分类 (Category)
+      description: 如果分类不准确，请在此处选择正确的分类
+      options:
+        - ai-chat (AI 对话)
+        - ai-writing (AI 写作)
+        - ai-audio-video (AI 音视频)
+        - ai-drawing (AI 绘画)
+        - ai-dev (AI 编程)
+        - dev-frontend (前端开发)
+        - dev-backend (后端/架构)
+        - dev-tools (在线工具)
+        - dev-resources (技术资源)
+        - web3-crypto (Web3/区块链)
+        - design-inspiration (灵感采集)
+        - design-assets (设计素材)
+        - design-icons (图标字体)
+        - design-color (配色排版)
+        - design-tools (设计工具)
+        - image-tools (图片处理)
+        - video-tools (视频工具)
+        - audio-tools (音频工具)
+        - product-ops (产品运营)
+        - marketing-seo (营销/SEO)
+        - indie-maker (独立开发)
+        - efficiency (效率办公)
+        - resource-site (资源下载)
+        - read-news (阅读资讯)
+        - lifestyle (生活趣味)
+
+  - type: textarea
+    id: description
+    attributes:
+      label: 修正说明 (Description)
+      description: 请详细描述需要更新的信息（如简介、封面图等）
+      placeholder: "官方已更新 Logo，新的 URL 是... 另外简介建议修改为..."
+    validations:
+      required: true

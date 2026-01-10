@@ -1,0 +1,39 @@
+name: "🔄 域名变更 (Domain Migration)"
+description: "站点更换了新域名？请在这里提交迁移申请。"
+title: "[Migration]: "
+labels: ["kind:domain-migration", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        提交前请确认：
+        1. 原 URL 在应用中已收录
+        2. 新 URL 可稳定访问
+        3. 如果是由于品牌升级改名，请在“变更说明”中注明
+
+  - type: input
+    id: original_url
+    attributes:
+      label: 原站点链接 (Original URL)
+      description: 请填写系统中目前收录的 URL
+      placeholder: "https://old-domain.com"
+    validations:
+      required: true
+
+  - type: input
+    id: new_url
+    attributes:
+      label: 新站点链接 (New URL)
+      description: 请填写最新的可用 URL
+      placeholder: "https://new-domain.com"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: 变更说明 (Reason)
+      description: 请简述变更原因，或说明是否有品牌名称调整
+      placeholder: "原域名被封，现升级为 xxx.com"
+    validations:
+      required: true

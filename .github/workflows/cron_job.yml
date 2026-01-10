@@ -1,0 +1,49 @@
+name: 🕸️ Core Automation (Health Check & Sync)
+
+on:
+  schedule:
+    - cron: '*/30 * * * *' # Every 30 minutes
+  workflow_dispatch: # Manual trigger
+  push:
+    paths:
+      - 'data/items/**.json' # When items update manually
+      - 'scripts/**'
+
+jobs:
+  automation:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # To push changes
+      issues: write   # To edit issues
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          
+      - name: Install Python Deps
+        run: pip install -r requirements.txt
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: 🏥 Run Health Check
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python scripts/health_check.py
+
+      - name: 🔨 Build Site Data & Sitemap
+        run: node scripts/build_site_all.js
+
+      - name: 🚀 Commit & Push Changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "🤖 Auto: Health check update & Data sync [skip ci]"
+          branch: main
+          file_pattern: 'data/items/*.json data/site_all.json public/sitemap.xml'
