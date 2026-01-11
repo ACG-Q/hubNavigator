@@ -5,15 +5,36 @@ from github import Github
 GITHUB_TOKEN = os.environ.get('GITHUB_TOKEN')
 REPO_NAME = os.environ.get('GITHUB_REPOSITORY')
 
-# 预定义的标签配置 (Label Name: Color)
+# 预定义的标签配置 (Label Name: {color, description})
 PROJECT_LABELS = {
-    "status:active": "0e8a16",   # 绿色
-    "status:warning": "fbca04",  # 黄色
-    "status:broken": "d93f0b",   # 红色
-    "kind:site": "1d76db",       # 蓝色
-    "kind:correction": "5319e7", # 紫色
-    "kind:domain-migration": "e99695",
-    "triage": "ededed"           # 灰色
+    "status:active": {
+        "color": "0e8a16", 
+        "desc": "Verified and active site | 已验证且正常运行的站点"
+    },
+    "status:warning": {
+        "color": "fbca04", 
+        "desc": "Site with accessibility issues | 访问存在异常的站点"
+    },
+    "status:broken": {
+        "color": "d93f0b", 
+        "desc": "Site is down or unreachable | 站点失效或无法访问"
+    },
+    "kind:site": {
+        "color": "1d76db", 
+        "desc": "Issue for new site submission | 新站点提交申请"
+    },
+    "kind:correction": {
+        "color": "5319e7", 
+        "desc": "Error report or site update | 报错修复或信息更新"
+    },
+    "kind:domain-migration": {
+        "color": "e99695", 
+        "desc": "Domain change request | 域名迁移申请"
+    },
+    "triage": {
+        "color": "ededed", 
+        "desc": "Pending review and classification | 等待审核与分类"
+    }
 }
 
 def setup_repo_labels(repo):
@@ -21,13 +42,22 @@ def setup_repo_labels(repo):
     print(f"Setting up labels for {REPO_NAME}...")
     existing_labels = {l.name: l for l in repo.get_labels()}
     
-    for name, color in PROJECT_LABELS.items():
+    for name, config in PROJECT_LABELS.items():
         if name in existing_labels:
             print(f"  - Updating label: {name}")
-            existing_labels[name].edit(name=name, color=color)
+            existing_labels[name].edit(name=name, color=config["color"], description=config["desc"])
         else:
             print(f"  - Creating label: {name}")
-            repo.create_label(name=name, color=color)
+            repo.create_label(name=name, color=config["color"], description=config["desc"])
+
+def cleanup_other_labels(repo):
+    """清理其他非项目定义的标签"""
+    print("Cleaning up extra labels...")
+    all_labels = repo.get_labels()
+    for label in all_labels:
+        if label.name not in PROJECT_LABELS:
+            print(f"  - Deleting extra label: {label.name}")
+            label.delete()
 
 def batch_label_issues(repo, filter_label, add_label):
     """批量操作：给所有带有 A 标签的 Issue 添加 B 标签"""
@@ -44,8 +74,11 @@ if __name__ == "__main__":
         g = Github(GITHUB_TOKEN)
         repo = g.get_repo(REPO_NAME)
         
-        # 1. 初始化标签颜色
+        # 1. 强制清理非标准标签
+        cleanup_other_labels(repo)
+
+        # 2. 初始化/同步标准标签
         setup_repo_labels(repo)
         
-        # 2. 批量处理示例：给所有 kind:site 的 Issue 加上 triage 标签
+        # 3. 批量处理示例：给所有 kind:site 的 Issue 加上 triage 标签
         # batch_label_issues(repo, "kind:site", "triage")
