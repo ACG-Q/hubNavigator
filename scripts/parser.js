@@ -47,7 +47,8 @@ function parseFormBody(body) {
         }
         else if (rawKey.includes('封面图')) data.cover = value;
         else if (rawKey.includes('详细介绍') || rawKey.includes('变更说明') || rawKey.includes('修正说明')) {
-            data.description = value;
+            // Ensure double newlines so they don't "clump" in markdown
+            data.description = value.replace(/\r\n/g, '\n').split('\n').filter(l => l.trim()).join('\n\n');
         }
     });
     return data;

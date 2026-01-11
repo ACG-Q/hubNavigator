@@ -6,12 +6,19 @@ import { marked } from 'marked'
 import GlobalConfig from '../config'
 import realSitesData from '../../data/site_all.json'
 import mockSitesData from '../../data/mock_data.json'
+import categoriesData from '../../data/categories.json'
 
 const { t, locale } = useI18n()
 const sitesData = import.meta.env.VITE_MOCK ? mockSitesData : realSitesData
 const route = useRoute()
 const router = useRouter()
 const site = ref(null)
+
+const getCategoryName = (catId) => {
+  const cat = categoriesData.find(c => c.id === catId)
+  if (!cat) return catId
+  return locale.value === 'zh' ? cat.name : cat.name_en
+}
 
 const loadSite = () => {
   const id = route.params.id
@@ -115,8 +122,9 @@ onMounted(() => {
         
         <div class="flex-1">
           <div class="flex flex-wrap gap-2 mb-4">
-             <span v-for="cat in site.categories" :key="cat" class="text-[10px] uppercase font-bold tracking-wider px-3 py-1 rounded-full bg-white/50 dark:bg-black/20 text-gray-600 dark:text-gray-300 border border-gray-100 dark:border-white/5">
-               {{ cat }}
+             <span v-for="catId in site.categories" :key="catId" class="text-[10px] uppercase font-bold tracking-wider px-3 py-1 rounded-full bg-white/50 dark:bg-black/20 text-gray-600 dark:text-gray-300 border border-gray-100 dark:border-white/5 flex items-center gap-1">
+               <span>{{ categoriesData.find(c => c.id === catId)?.icon }}</span>
+               {{ getCategoryName(catId) }}
              </span>
           </div>
           
@@ -193,11 +201,6 @@ onMounted(() => {
        </div>
     </div>
 
-  </div>
-  <div v-else class="text-center py-20">
-    <h2 class="text-2xl font-bold">{{ t('details.notFound') }}</h2>
-    <p class="text-gray-500 mt-2">The requested application could not be located.</p>
-    <button @click="router.push('/')" class="mt-4 text-primary hover:underline">Go Home</button>
   </div>
 </template>
 

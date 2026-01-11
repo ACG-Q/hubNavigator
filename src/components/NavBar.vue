@@ -1,5 +1,5 @@
 <script setup>
-import { inject } from 'vue'
+import { inject, onMounted, onUnmounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import GlobalConfig from '../config'
 
@@ -11,6 +11,27 @@ defineProps({
 })
 
 const emit = defineEmits(['update:searchQuery'])
+const searchInput = ref(null)
+
+const handleKeydown = (e) => {
+  // Focus on '/' (if not already focused and not typing in another input)
+  if (e.key === '/' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+    e.preventDefault()
+    searchInput.value?.focus()
+  }
+  // Clear on 'Esc'
+  if (e.key === 'Escape' && document.activeElement === searchInput.value) {
+    emit('update:searchQuery', '')
+  }
+}
+
+onMounted(() => {
+  window.addEventListener('keydown', handleKeydown)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleKeydown)
+})
 
 const toggleLocale = () => {
   locale.value = locale.value === 'zh' ? 'en' : 'zh'
@@ -35,15 +56,32 @@ const toggleLocale = () => {
       <div class="flex-1 max-w-xl mx-8 hidden md:block group">
         <div class="relative">
           <input 
+            ref="searchInput"
             type="text" 
             :value="searchQuery"
             @input="emit('update:searchQuery', $event.target.value)"
             :placeholder="t('nav.searchPlaceholder')"
-            class="w-full bg-gray-100 dark:bg-gray-800/50 border-none rounded-xl py-2.5 pl-10 pr-4 focus:ring-2 focus:ring-primary/50 transition-all duration-300 group-hover:bg-white dark:group-hover:bg-gray-800 shadow-inner"
+            class="w-full bg-gray-100 dark:bg-gray-800/50 border-none rounded-xl py-2.5 pl-10 pr-12 focus:ring-2 focus:ring-primary/50 transition-all duration-300 group-hover:bg-white dark:group-hover:bg-gray-800 shadow-inner"
           />
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
+          
+          <!-- Shortcut Hint -->
+          <div v-if="!searchQuery" class="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 opacity-40 group-focus-within:opacity-0 transition-opacity pointer-events-none">
+            <kbd class="px-1.5 py-0.5 text-[10px] font-sans font-bold bg-gray-200 dark:bg-gray-700 rounded border border-gray-300 dark:border-gray-600">/</kbd>
+          </div>
+
+          <!-- Clear Button -->
+          <button 
+            v-else
+            @click="emit('update:searchQuery', '')"
+            class="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-all"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
         </div>
       </div>
 

@@ -1,9 +1,0 @@
-{
-  "id": "101",
-  "original_url": "https://old.com",
-  "url": "https://new.com",
-  "added_at": "2026-01-10",
-  "status": "active",
-  "type": "migration",
-  "description_md": "域名过期切换到新域名。"
-}

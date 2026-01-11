@@ -1,12 +1,14 @@
 <script setup>
-import { ref, onMounted, computed, inject } from 'vue'
+import { ref, onMounted, computed, inject, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import Fuse from 'fuse.js'
 import CategorySidebar from '../components/CategorySidebar.vue'
 import SiteGrid from '../components/SiteGrid.vue'
 import realSitesData from '../../data/site_all.json'
 import mockSitesData from '../../data/mock_data.json'
+import categoriesData from '../../data/categories.json'
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const sitesData = import.meta.env.VITE_MOCK ? mockSitesData : realSitesData
 const { searchQuery } = inject('search')
 
@@ -17,33 +19,67 @@ onMounted(() => {
   sites.value = sitesData
 })
 
-const categories = computed(() => {
-  const cats = new Set()
+const activeCategories = computed(() => {
+  const activeIds = new Set()
   sites.value.forEach(site => {
     if (Array.isArray(site.categories)) {
-      site.categories.forEach(c => cats.add(c))
+      site.categories.forEach(id => activeIds.add(id))
     }
   })
-  return Array.from(cats).sort()
+  return categoriesData.filter(cat => activeIds.has(cat.id))
+})
+
+const currentCategoryName = computed(() => {
+  if (!selectedCategory.value) return t('home.allApps')
+  const cat = categoriesData.find(c => c.id === selectedCategory.value)
+  if (!cat) return selectedCategory.value
+  return locale.value === 'zh' ? cat.name : cat.name_en
+})
+
+// Initialize Fuse.js
+const fuse = computed(() => {
+  const options = {
+    keys: [
+      { name: 'name', weight: 1.0 },
+      { name: 'description', weight: 0.6 },
+      { name: 'description_md', weight: 0.4 },
+      { name: 'categoryNames', weight: 0.8 }
+    ],
+    threshold: 0.3, // Lower is stricter
+    includeMatches: true
+  }
+
+  // Pre-process data for Fuse
+  const list = sites.value.map(site => {
+    const catNames = (site.categories || []).map(catId => {
+      const cat = categories.value.find(c => c.id === catId)
+      return cat ? [cat.name, cat.name_en] : []
+    }).flat()
+    
+    return {
+      ...site,
+      categoryNames: catNames.join(' ')
+    }
+  })
+
+  return new Fuse(list, options)
 })
 
 const filteredSites = computed(() => {
-  return sites.value.filter(site => {
-    // Filter by Category
-    if (selectedCategory.value && !site.categories?.includes(selectedCategory.value)) {
-      return false
-    }
-    // Filter by Search
-    if (searchQuery.value) {
-      const q = searchQuery.value.toLowerCase()
-      return (
-        site.name.toLowerCase().includes(q) ||
-        (site.description && site.description.toLowerCase().includes(q)) ||
-        (site.description_md && site.description_md.toLowerCase().includes(q))
-      )
-    }
-    return true
-  })
+  let result = sites.value
+
+  // 1. Fuzzy Search first (if query exists)
+  if (searchQuery.value) {
+    const searchResult = fuse.value.search(searchQuery.value)
+    result = searchResult.map(res => res.item)
+  }
+
+  // 2. Filter by Category (hard filter)
+  if (selectedCategory.value) {
+    result = result.filter(site => site.categories?.includes(selectedCategory.value))
+  }
+
+  return result
 })
 </script>
 
@@ -51,7 +87,7 @@ const filteredSites = computed(() => {
   <div class="flex flex-col md:flex-row md:gap-8">
     <!-- Sidebar -->
     <CategorySidebar 
-      :categories="categories"
+      :categories="activeCategories"
       :selectedCategory="selectedCategory"
       @select="cat => selectedCategory = cat"
     />
@@ -61,7 +97,7 @@ const filteredSites = computed(() => {
       <div v-if="filteredSites.length > 0">
          <div class="mb-6 flex items-center justify-between">
             <h2 class="text-2xl font-bold text-text-primary">
-              {{ selectedCategory ? selectedCategory.replace(/-/g, ' ') : t('home.allApps') }}
+              {{ currentCategoryName }}
               <span class="text-sm font-normal text-gray-500 ml-2">({{ filteredSites.length }})</span>
             </h2>
          </div>

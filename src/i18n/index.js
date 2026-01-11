@@ -18,6 +18,8 @@ const messages = {
             detailsTitle: 'Product Details',
             reportIssue: 'Report Error / Suggest Fix',
             comments: 'Comments',
+            viewOnGithub: 'View Conversation on GitHub →',
+            loadingComments: 'Loading comments...',
             notFound: 'Site not found'
         },
         go: {
@@ -44,6 +46,8 @@ const messages = {
             detailsTitle: '产品介绍',
             reportIssue: '报错 / 建议修改',
             comments: '评论交流',
+            viewOnGithub: '在 GitHub 查看对话 →',
+            loadingComments: '评论加载中...',
             notFound: '未找到该站点'
         },
         go: {

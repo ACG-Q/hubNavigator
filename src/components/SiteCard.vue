@@ -1,10 +1,20 @@
 <script setup>
+import { useI18n } from 'vue-i18n'
+import categoriesData from '../../data/categories.json'
+
+const { locale } = useI18n()
 defineProps({
   site: {
     type: Object,
     required: true
   }
 })
+
+const getCategoryName = (catId) => {
+  const cat = categoriesData.find(c => c.id === catId)
+  if (!cat) return catId
+  return locale.value === 'zh' ? cat.name : cat.name_en
+}
 
 const getIconUrl = (url) => {
   try {
@@ -38,7 +48,7 @@ const getIconUrl = (url) => {
         </div>
         <div class="flex gap-1">
            <span v-for="cat in site.categories" :key="cat" class="text-[10px] uppercase font-bold tracking-wider px-2 py-1 rounded-full bg-gray-100 dark:bg-gray-700/50 text-gray-500 dark:text-gray-400">
-             {{ cat }}
+             {{ getCategoryName(cat) }}
            </span>
         </div>
       </div>

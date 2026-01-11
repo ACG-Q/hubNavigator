@@ -1,14 +1,14 @@
 <script setup>
 import { useI18n } from 'vue-i18n'
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 defineProps({
   categories: {
-    type: Array,
+    type: Array, // Array of category objects {id, name, name_en, icon, ...}
     required: true
   },
   selectedCategory: {
-    type: String,
+    type: String, // This is the ID
     default: ''
   }
 })
@@ -41,17 +41,18 @@ defineEmits(['select'])
 
         <button
           v-for="cat in categories"
-          :key="cat"
-          @click="$emit('select', cat)"
-          class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-300 whitespace-nowrap capitalize"
+          :key="cat.id"
+          @click="$emit('select', cat.id)"
+          class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-300 whitespace-nowrap"
+          :title="locale === 'zh' ? cat.description : cat.desc_en"
           :class="[
-            selectedCategory === cat
+            selectedCategory === cat.id
               ? 'bg-primary text-white shadow-lg shadow-primary/30' 
               : 'text-gray-600 dark:text-gray-400 hover:bg-white dark:hover:bg-gray-800 hover:text-primary dark:hover:text-white'
           ]"
         >
-          <span class="w-1.5 h-1.5 rounded-full bg-current opacity-60"></span>
-          {{ cat.replace(/-/g, ' ') }}
+          <span class="text-lg">{{ cat.icon }}</span>
+          {{ locale === 'zh' ? cat.name : cat.name_en }}
         </button>
       </div>
     </div>

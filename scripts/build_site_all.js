@@ -1,10 +1,13 @@
 const fs = require('fs');
 const path = require('path');
+const yaml = require('js-yaml');
 
 const DATA_DIR = path.join(__dirname, '../data');
 const ITEMS_DIR = path.join(DATA_DIR, 'items');
 const PUBLIC_DIR = path.join(__dirname, '../public');
 const SITE_ALL_PATH = path.join(DATA_DIR, 'site_all.json');
+const CATEGORIES_PATH = path.join(__dirname, '../config/categories.yaml');
+const CATEGORIES_JSON_PATH = path.join(DATA_DIR, 'categories.json');
 const SITEMAP_PATH = path.join(PUBLIC_DIR, 'sitemap.xml');
 
 // Base URL for sitemap
@@ -55,6 +58,15 @@ function main() {
     // 3. Write site_all.json
     fs.writeFileSync(SITE_ALL_PATH, JSON.stringify(sites, null, 2));
     console.log(`Generated ${SITE_ALL_PATH} with ${sites.length} items.`);
+
+    // 3.1 Synchronize categories.json
+    try {
+        const categoriesData = yaml.load(fs.readFileSync(CATEGORIES_PATH, 'utf8'));
+        fs.writeFileSync(CATEGORIES_JSON_PATH, JSON.stringify(categoriesData, null, 2));
+        console.log(`Synchronized ${CATEGORIES_JSON_PATH}`);
+    } catch (e) {
+        console.error("Failed to sync categories.json:", e);
+    }
 
     // 4. Generate Sitemap
     const urls = sites.map(site => `

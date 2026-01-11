@@ -1,0 +1,202 @@
+[
+  {
+    "id": "ai-chat",
+    "name": "AI 对话",
+    "name_en": "AI Chat",
+    "icon": "🤖",
+    "description": "LLM 聊天机器人 (ChatGPT, Claude, Gemini)",
+    "desc_en": "LLM Chatbots and AI conversational tools"
+  },
+  {
+    "id": "ai-writing",
+    "name": "AI 写作",
+    "name_en": "AI Writing",
+    "icon": "✍️",
+    "description": "辅助写作、文案生成、润色工具",
+    "desc_en": "Writing assistants, copywriting, and proofreading tools"
+  },
+  {
+    "id": "ai-audio-video",
+    "name": "AI 音视频",
+    "name_en": "AI Audio & Video",
+    "icon": "🎥",
+    "description": "AI 生成视频、语音合成 (TTS)、克隆",
+    "desc_en": "AI video generation, TTS, and voice cloning"
+  },
+  {
+    "id": "ai-drawing",
+    "name": "AI 绘画",
+    "name_en": "AI Image Generation",
+    "icon": "🎨",
+    "description": "MidJourney, Stable Diffusion, 生图工具",
+    "desc_en": "MidJourney, Stable Diffusion, and other art tools"
+  },
+  {
+    "id": "ai-dev",
+    "name": "AI 编程",
+    "name_en": "AI Development",
+    "icon": "💻",
+    "description": "Copilot, 代码生成、SQL 辅助",
+    "desc_en": "GitHub Copilot, code generation, and SQL assistants"
+  },
+  {
+    "id": "dev-frontend",
+    "name": "前端开发",
+    "name_en": "Frontend Dev",
+    "icon": "⚡",
+    "description": "Vue/React 库、CSS 框架、组件库",
+    "desc_en": "Vue/React libraries, CSS frameworks, UI kits"
+  },
+  {
+    "id": "dev-backend",
+    "name": "后端/架构",
+    "name_en": "Backend & Infra",
+    "icon": "🔧",
+    "description": "数据库、API 工具、云服务、运维",
+    "desc_en": "Databases, API tools, cloud services, DevOps"
+  },
+  {
+    "id": "dev-tools",
+    "name": "在线工具",
+    "name_en": "Online Tools",
+    "icon": "🛠️",
+    "description": "正则、JSON、Base64、转换器、Mock",
+    "desc_en": "Regex, JSON, Base64, converters, Mocking"
+  },
+  {
+    "id": "dev-resources",
+    "name": "技术资源",
+    "name_en": "Tech Resources",
+    "icon": "📚",
+    "description": "官方文档、开源社区、GitHub 趋势",
+    "desc_en": "Official docs, open source communities, GitHub Trends"
+  },
+  {
+    "id": "web3-crypto",
+    "name": "Web3/区块链",
+    "name_en": "Web3 & Crypto",
+    "icon": "🪙",
+    "description": "加密货币、DeFi、智能合约、NFT",
+    "desc_en": "Cryptocurrency, DeFi, smart contracts, NFT"
+  },
+  {
+    "id": "design-inspiration",
+    "name": "灵感采集",
+    "name_en": "Design Inspiration",
+    "icon": "💡",
+    "description": "Dribbble, Behance, 网页画廊",
+    "desc_en": "Dribbble, Behance, web galleries"
+  },
+  {
+    "id": "design-assets",
+    "name": "设计素材",
+    "name_en": "Design Assets",
+    "icon": "📦",
+    "description": "免费商用图片、3D 模型、矢量插画",
+    "desc_en": "Free stock photos, 3D models, vector illustrations"
+  },
+  {
+    "id": "design-icons",
+    "name": "图标字体",
+    "name_en": "Icons & Fonts",
+    "icon": "🎭",
+    "description": "Iconify, FontAwesome, SVG 图标库",
+    "desc_en": "Iconify, FontAwesome, SVG icon libraries"
+  },
+  {
+    "id": "design-color",
+    "name": "配色排版",
+    "name_en": "Color & Typography",
+    "icon": "🌈",
+    "description": "调色板、字体搭配、渐变色生成",
+    "desc_en": "Color palettes, font pairings, gradient generators"
+  },
+  {
+    "id": "design-tools",
+    "name": "设计工具",
+    "name_en": "Design Tools",
+    "icon": "✏️",
+    "description": "Figma 插件、在线 PS、原型设计",
+    "desc_en": "Figma plugins, online Photoshop, prototyping"
+  },
+  {
+    "id": "image-tools",
+    "name": "图片处理",
+    "name_en": "Image Processing",
+    "icon": "🖼️",
+    "description": "压缩、抠图、格式转换、水印处理",
+    "desc_en": "Compression, background removal, format conversion"
+  },
+  {
+    "id": "video-tools",
+    "name": "视频工具",
+    "name_en": "Video Tools",
+    "icon": "🎬",
+    "description": "在线剪辑、格式转换、下载器",
+    "desc_en": "Online editing, format conversion, downloaders"
+  },
+  {
+    "id": "audio-tools",
+    "name": "音频工具",
+    "name_en": "Audio Tools",
+    "icon": "🎵",
+    "description": "剪辑、降噪、格式转换",
+    "desc_en": "Editing, noise reduction, format conversion"
+  },
+  {
+    "id": "product-ops",
+    "name": "产品运营",
+    "name_en": "Product & Ops",
+    "icon": "📈",
+    "description": "数据分析、A/B 测试、竞品分析",
+    "desc_en": "Data analytics, A/B testing, competitive analysis"
+  },
+  {
+    "id": "marketing-seo",
+    "name": "营销/SEO",
+    "name_en": "Marketing & SEO",
+    "icon": "🔍",
+    "description": "关键词挖掘、ASO、流量统计",
+    "desc_en": "Keyword research, ASO, traffic analytics"
+  },
+  {
+    "id": "indie-maker",
+    "name": "独立开发",
+    "name_en": "Indie Maker",
+    "icon": "🚀",
+    "description": "变现、出海、产品发布平台 (ProductHunt)",
+    "desc_en": "Monetization, global launch, ProductHunt"
+  },
+  {
+    "id": "efficiency",
+    "name": "效率办公",
+    "name_en": "Productivity",
+    "icon": "⏳",
+    "description": "笔记、PDF、思维导图、协作",
+    "desc_en": "Notes, PDF, mind mapping, collaboration"
+  },
+  {
+    "id": "resource-site",
+    "name": "资源下载",
+    "name_en": "Resources",
+    "icon": "💾",
+    "description": "软件下载、网盘资源、磁力搜索",
+    "desc_en": "Software downloads, cloud storage, torrent search"
+  },
+  {
+    "id": "read-news",
+    "name": "阅读资讯",
+    "name_en": "News & Reading",
+    "icon": "📰",
+    "description": "科技资讯、博客、Newsletter",
+    "desc_en": "Tech news, blogs, newsletters"
+  },
+  {
+    "id": "lifestyle",
+    "name": "生活趣味",
+    "name_en": "Lifestyle",
+    "icon": "☕",
+    "description": "摸鱼、游戏、购物、旅行",
+    "desc_en": "Hobbies, games, shopping, travel"
+  }
+]

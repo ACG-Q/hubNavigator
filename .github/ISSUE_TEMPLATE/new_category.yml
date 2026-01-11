@@ -1,0 +1,51 @@
+name: "📂 新增分类申请 (New Category Request)"
+description: "向 HubNavigator 提议新增一个网站分类 (Propose a new category)"
+title: "[Category] "
+labels: ["kind:new-category", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感谢提议新分类！管理员审核通过后，将通过自动化脚本正式添加。
+        Thanks for the proposal! Once approved, it will be added via automation.
+  - type: input
+    id: category_id
+    attributes:
+      label: "分类 ID (Category ID)"
+      description: "小写字母，连字符分隔，如 'dev-tools' (lowercase, hyphen-separated)"
+      placeholder: "e.g. design-assets"
+    validations:
+      required: true
+  - type: input
+    id: name_zh
+    attributes:
+      label: "中文名称 (Chinese Name)"
+      placeholder: "例如：设计素材"
+    validations:
+      required: true
+  - type: input
+    id: name_en
+    attributes:
+      label: "英文名称 (English Name)"
+      placeholder: "e.g. Design Assets"
+    validations:
+      required: true
+  - type: input
+    id: icon
+    attributes:
+      label: "图标 (Icon/Emoji)"
+      placeholder: "🎨"
+    validations:
+      required: true
+  - type: textarea
+    id: desc_zh
+    attributes:
+      label: "中文描述 (Chinese Description)"
+    validations:
+      required: true
+  - type: textarea
+    id: desc_en
+    attributes:
+      label: "英文描述 (English Description)"
+    validations:
+      required: true
