@@ -1,5 +1,16 @@
 [
   {
+    "id": "7",
+    "name": "ghxi",
+    "url": "https://www.ghxi.com/",
+    "categories": [
+      "resource-site"
+    ],
+    "cover": "",
+    "description_md": "test3",
+    "status": "active"
+  },
+  {
     "id": "6",
     "name": "Gemini",
     "url": "https://gemini.google.com/",
