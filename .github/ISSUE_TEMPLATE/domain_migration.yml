@@ -12,6 +12,15 @@ body:
         3. 如果是由于品牌升级改名，请在“变更说明”中注明
 
   - type: input
+    id: site_id
+    attributes:
+      label: 站点 ID (Site ID)
+      description: 请填写要迁移的站点 ID (Required: Provide the Site ID)
+      placeholder: "123"
+    validations:
+      required: true
+
+  - type: input
     id: original_url
     attributes:
       label: 原站点链接 (Original URL)

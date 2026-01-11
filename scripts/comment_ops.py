@@ -43,10 +43,74 @@ def main():
         handle_update(issue)
     elif COMMENT_BODY.startswith('/category'):
         handle_category(issue, COMMENT_BODY)
+    elif COMMENT_BODY.startswith('/merge'):
+        handle_merge(repo, issue)
     elif COMMENT_BODY.startswith('/label'):
         handle_label(issue, COMMENT_BODY)
     else:
         print(f"Unknown command: {COMMENT_BODY}")
+
+def handle_merge(repo, issue):
+    """
+    Applies changes from a correction/migration issue to the target site issue.
+    """
+    print(f"Merging changes from issue #{issue.number}...")
+    try:
+        source_post = frontmatter.loads(issue.body)
+        meta = source_post.metadata
+        
+        type_ = meta.get('type')
+        if type_ not in ['correction', 'migration']:
+            issue.create_comment("❌ This issue is not a correction or migration. Only these types can be merged.")
+            return
+
+        target_id = meta.get('target_id')
+        if not target_id:
+            issue.create_comment("❌ Cannot find `target_id` in metadata. Please ensure the site name/ID is correct.")
+            return
+
+        print(f"Target site ID identified: {target_id}")
+        try:
+            target_issue = repo.get_issue(int(target_id))
+        except Exception:
+            issue.create_comment(f"❌ Could not find target issue #{target_id}. Please check the ID.")
+            return
+
+        target_post = frontmatter.loads(target_issue.body)
+        
+        if type_ == 'correction':
+            # Apply Name, URL, Categories
+            if meta.get('name'): target_post.metadata['name'] = meta['name']
+            if meta.get('url'): target_post.metadata['url'] = meta['url']
+            if meta.get('categories'): target_post.metadata['categories'] = meta['categories']
+            
+            # If there's a description in the request, we could append or replace. 
+            # For now, let's just update metadata.
+            
+            summary = f"Applied correction from #{issue.number}."
+        
+        elif type_ == 'migration':
+            # Apply Link Change
+            old_url = target_post.metadata.get('url')
+            new_url = meta.get('url')
+            if new_url:
+                target_post.metadata['url'] = new_url
+                summary = f"Applied domain migration from #{issue.number}. (Old: {old_url} -> New: {new_url})"
+            else:
+                issue.create_comment("❌ New URL missing in migration request.")
+                return
+
+        # Commit changes to target issue
+        target_issue.edit(body=frontmatter.dumps(target_post))
+        target_issue.create_comment(f"✅ **Update Applied!** \n{summary}")
+        
+        # Close correction issue
+        issue.create_comment(f"✅ **Changes Merged!** \nUpdated target site: #{target_id}. This issue will now be closed.")
+        issue.edit(state='closed', labels=['status:active']) # Mark correction as active/done
+        
+    except Exception as e:
+        issue.create_comment(f"❌ Error during merge: {e}")
+        print(f"Merge error: {e}")
 
 def handle_approve(issue):
     print(f"Approving issue #{issue.number}...")

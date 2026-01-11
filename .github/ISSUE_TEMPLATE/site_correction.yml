@@ -11,9 +11,9 @@ body:
   - type: input
     id: name
     attributes:
-      label: 站点名称/ID (Site Name or ID)
-      description: 请提供要修正的站点名称或 ID
-      placeholder: "Gemini"
+      label: 站点 ID 或名称 (Site ID or Name)
+      description: 推荐填写站点 ID (如 123)，可在站点详情页地址栏或 GitHub 链接中找到。 (Recommended: Provide the Site ID from the URL or GitHub link)
+      placeholder: "123"
     validations:
       required: true
 

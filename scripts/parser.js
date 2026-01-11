@@ -42,6 +42,7 @@ function parseFormBody(body) {
         else if (rawKey.includes('链接地址')) data.url = value;
         else if (rawKey.includes('原站点链接')) data.original_url = value;
         else if (rawKey.includes('新站点链接')) data.new_url = value;
+        else if (rawKey.includes('站点 ID')) data.target_id = value;
         else if (rawKey.includes('核心分类')) {
             // Checkboxes format:
             // - [ ] id (Name)
@@ -113,21 +114,31 @@ async function main() {
         const now = new Date().toISOString().split('T')[0];
 
         if (isMigration) {
+            let targetId = formData.target_id || '';
+            const idMatch = targetId.match(/(?:site_issue_)?(\d+)/);
+            if (idMatch) targetId = idMatch[1];
+
             itemData = {
                 id: issueId,
-                original_url: formData.original_url,
+                target_id: targetId,
                 url: formData.new_url,
                 added_at: now,
-                status: 'active',
+                status: 'triage',
                 type: 'migration'
             };
         } else if (isCorrection) {
+            // Try to extract ID from name input if it looks like a number or site_issue_XXX
+            let targetId = formData.name;
+            const idMatch = formData.name.match(/(?:site_issue_)?(\d+)/);
+            if (idMatch) targetId = idMatch[1];
+
             itemData = {
                 id: issueId,
+                target_id: targetId,
                 name: formData.name,
                 url: formData.url,
                 categories: formData.categories || [],
-                status: 'active',
+                status: 'triage',
                 type: 'correction'
             };
         } else {
@@ -144,7 +155,7 @@ async function main() {
                 cover: formData.cover || '',
                 added_at: now,
                 last_check: `${now} 00:00`,
-                status: 'active'
+                status: 'active' // Sites are active by default (triage label controls visibility if desired, but we use status)
             };
         }
 
