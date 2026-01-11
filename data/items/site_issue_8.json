@@ -1,0 +1,13 @@
+{
+  "id": "8",
+  "name": "测试4",
+  "url": "https://translate.google.com/",
+  "categories": [
+    "lifestyle"
+  ],
+  "cover": "",
+  "added_at": "2026-01-11",
+  "last_check": "2026-01-11 00:00",
+  "status": "triage",
+  "description_md": "测试4"
+}
