@@ -1,14 +1,27 @@
 name: 📝 Issue Parser
 
-# 触发条件：当 Issue 被创建、标签变动或主体被编辑时运行
+# 触发条件：Issue 创建或编辑时运行
+# 注意：parser 会更新 Issue body，但通过条件判断避免循环触发
 on:
   issues:
-    types: [opened, edited, labeled]
+    types: [opened, edited]
+
+# 并发控制：同一 Issue 同时只能有一个 parser 运行
+concurrency:
+  group: issue-parser-${{ github.event.issue.number }}
+  cancel-in-progress: false
 
 jobs:
   parse:
-    # 过滤器：仅处理带有特定标签的 Issue
-    if: contains(github.event.issue.labels.*.name, 'kind:site') || contains(github.event.issue.labels.*.name, 'kind:domain-migration') || contains(github.event.issue.labels.*.name, 'kind:correction')
+    # 过滤器：
+    # 1. 仅处理带有特定标签的 Issue
+    # 2. 跳过已经包含 Front Matter 的 Issue（避免循环触发）
+    if: |
+      (contains(github.event.issue.labels.*.name, 'kind:site') || 
+       contains(github.event.issue.labels.*.name, 'kind:domain-migration') || 
+       contains(github.event.issue.labels.*.name, 'kind:correction') || 
+       contains(github.event.issue.labels.*.name, 'kind:new-category')) &&
+      !startsWith(github.event.issue.body, '---')
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -43,3 +56,5 @@ jobs:
         with:
           commit_message: "🤖 Auto: Normalize Issue #${{ github.event.issue.number }} to Front Matter"
           file_pattern: 'data/items/*.json'
+          skip_fetch: false
+          skip_checkout: false

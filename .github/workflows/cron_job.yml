@@ -13,6 +13,11 @@ on:
       - 'data/items/**.json'
       - 'scripts/**'
 
+# 并发控制：同时只能有一个 Core Automation 运行
+concurrency:
+  group: core-automation
+  cancel-in-progress: false
+
 jobs:
   automation:
     runs-on: ubuntu-latest
@@ -56,5 +61,7 @@ jobs:
         with:
           commit_message: "🤖 Auto: Health check update & Data sync [skip ci]"
           branch: ${{ github.ref_name }}
-          file_pattern: 'data/items/*.json data/site_all.json public/sitemap.xml'
+          file_pattern: 'data/items/*.json data/site_all.json public/sitemap.xml data/categories.json'
+          skip_fetch: false
+          skip_checkout: false
 

@@ -132,21 +132,51 @@
 
 ## 5. 标签管理命令
 
-### `/label <label1> <label2> ...`
+### `/label add <label1> add <label2> remove <label3> ...`
 
-**用途**：批量为 Issue 添加标签。
+**用途**：批量添加或删除 Issue 标签。
 
 **参数**：
-- `<label1> <label2> ...`：一个或多个标签名称，用空格分隔
+- `add <label>`：添加一个标签
+- `remove <label>` 或 `del <label>`：删除一个标签
+- 可以在一条命令中混合使用多个 `add` 和 `remove`
 
 **执行效果**：
-1. 为当前 Issue 添加所有指定的标签
-2. 自动回复确认消息
+1. 按顺序执行所有添加和删除操作
+2. 如果删除的标签不存在，会给出提示但不会报错
+3. 自动回复操作结果
 
 **使用示例**：
+
+**示例 1：添加单个标签**
 ```
-/label status:warning bot:check-fail
+/label add status:warning
 ```
+
+**示例 2：批量添加多个标签**
+```
+/label add status:warning add bot:check-fail
+```
+
+**示例 3：删除标签**
+```
+/label remove triage
+```
+
+**示例 4：同时添加和删除**
+```
+/label add status:active remove triage
+```
+
+**示例 5：复杂批量操作**
+```
+/label add status:warning add bot:check-fail remove status:active remove triage
+```
+
+**注意事项**：
+- 标签名称区分大小写
+- 如果标签不存在会自动创建（添加时）
+- 删除不存在的标签会显示警告但不会中断操作
 
 ---
 

@@ -73,6 +73,11 @@ def main():
             status = post.metadata.get('status', 'active')
             last_check = post.metadata.get('last_check', '2000-01-01')
             
+            # Skip triage status - these need manual approval first
+            if status == 'triage':
+                print(f"Skipping issue #{issue.number} (status: triage, awaiting approval)")
+                continue
+            
             # Simple priority score: 
             # Warning = 100
             # Active = 0 - timestamp (older is smaller/better? No, we want Older to be processed first)
