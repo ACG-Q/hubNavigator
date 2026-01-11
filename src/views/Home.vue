@@ -52,7 +52,7 @@ const fuse = computed(() => {
   // Pre-process data for Fuse
   const list = sites.value.map(site => {
     const catNames = (site.categories || []).map(catId => {
-      const cat = categories.value.find(c => c.id === catId)
+      const cat = categoriesData.find(c => c.id === catId)
       return cat ? [cat.name, cat.name_en] : []
     }).flat()
     
