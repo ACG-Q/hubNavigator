@@ -1,5 +1,20 @@
 [
   {
+    "id": "6",
+    "name": "Gemini",
+    "url": "https://gemini.google.com/",
+    "categories": [
+      "ai-chat",
+      "ai-writing",
+      "ai-audio-video",
+      "ai-drawing",
+      "ai-dev"
+    ],
+    "cover": "",
+    "description_md": "测试2，看看我不回复，是否还会自动active",
+    "status": "active"
+  },
+  {
     "id": "5",
     "name": "ACG-Q",
     "url": "https://acg-q.github.io/",
