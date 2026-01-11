@@ -31,6 +31,14 @@ PROJECT_LABELS = {
         "color": "e99695", 
         "desc": "Domain change request | 域名迁移申请"
     },
+    "kind:new-category": {
+        "color": "c2e0c6",
+        "desc": "Proposal for a new category | 新增分类申请"
+    },
+    "status:duplicate": {
+        "color": "cfd3d7",
+        "desc": "Duplicate site or record | 重复提交的站点"
+    },
     "triage": {
         "color": "ededed", 
         "desc": "Pending review and classification | 等待审核与分类"
