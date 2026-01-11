@@ -1,1 +1,13 @@
-[]
+[
+  {
+    "id": "5",
+    "name": "ACG-Q",
+    "url": "https://acg-q.github.io/",
+    "categories": [
+      "dev-resources"
+    ],
+    "cover": "",
+    "description_md": "测试",
+    "status": "active"
+  }
+]
