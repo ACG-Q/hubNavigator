@@ -1,0 +1,26 @@
+[
+    {
+        "id": "mock-1",
+        "name": "Mock App Pro",
+        "url": "https://example.com",
+        "categories": [
+            "mock",
+            "dev-tools"
+        ],
+        "description": "This is a mock application for testing purposes.",
+        "description_md": "## Features\n- **Super Fast**: Built with cutting-edge tech.\n- **Modern UI**: Powered by Tailwind CSS.\n- **Responsive**: Works on all devices.\n\n### Why choose us?\nBecause we are the best in the market. Check out our [documentation](https://example.com/docs).\n\n```javascript\nconsole.log('Hello World');\n```",
+        "cover": "",
+        "status": "active"
+    },
+    {
+        "id": "mock-2",
+        "name": "Test Tool Ultra",
+        "url": "https://test.com",
+        "categories": [
+            "testing"
+        ],
+        "description": "Another test tool.",
+        "description_md": "# Getting Started\n1. Install the tool.\n2. Configure your environment.\n3. Run your first test.\n\n> Note: This is a blockquote for testing.",
+        "status": "warning"
+    }
+]
