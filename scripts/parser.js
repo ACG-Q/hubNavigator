@@ -110,6 +110,7 @@ async function main() {
         const labels = (process.env.ISSUE_LABELS || '').split(',');
         const isMigration = labels.includes('kind:domain-migration');
         const isCorrection = labels.includes('kind:correction');
+        const isTriage = labels.includes('triage');
 
         const now = new Date().toISOString().split('T')[0];
 
@@ -155,7 +156,7 @@ async function main() {
                 cover: formData.cover || '',
                 added_at: now,
                 last_check: `${now} 00:00`,
-                status: 'active' // Sites are active by default (triage label controls visibility if desired, but we use status)
+                status: isTriage ? 'triage' : 'active' // Sites are triage by default if label exists, otherwise active
             };
         }
 

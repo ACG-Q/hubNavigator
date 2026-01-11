@@ -69,13 +69,16 @@ def main():
             if not post.metadata:
                 continue
                 
+            # Get actual issue labels
+            issue_labels = [l.name for l in issue.get_labels()]
+            
             # Check labels/status priority
             status = post.metadata.get('status', 'active')
             last_check = post.metadata.get('last_check', '2000-01-01')
             
-            # Skip triage status - these need manual approval first
-            if status == 'triage':
-                print(f"Skipping issue #{issue.number} (status: triage, awaiting approval)")
+            # Skip triage status or issues with triage label - these need manual approval first
+            if status == 'triage' or 'triage' in issue_labels:
+                print(f"Skipping issue #{issue.number} (status: {status}, labels: {issue_labels}, awaiting approval)")
                 continue
             
             # Simple priority score: 
