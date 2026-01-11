@@ -47,6 +47,8 @@ def main():
         handle_merge(repo, issue)
     elif COMMENT_BODY.startswith('/label'):
         handle_label(issue, COMMENT_BODY)
+    elif COMMENT_BODY.startswith('/close'):
+        handle_close(issue, COMMENT_BODY)
     else:
         print(f"Unknown command: {COMMENT_BODY}")
 
@@ -235,6 +237,35 @@ def handle_label(issue, command):
         
     except Exception as e:
         issue.create_comment(f"❌ **错误 | Error**\n\n```\n{e}\n```")
+
+def handle_close(issue, command):
+    """
+    用法示例:
+    /close
+    /close 重复提交
+    /close Duplicate submission
+    
+    关闭当前 Issue，可选择性提供关闭原因
+    """
+    parts = command.split(maxsplit=1)
+    reason = parts[1] if len(parts) > 1 else ""
+    
+    try:
+        # 关闭 Issue
+        issue.edit(state='closed')
+        
+        # 构建回复消息
+        if reason:
+            message = f"🔒 **Issue 已关闭 | Issue Closed**\n\n**原因 | Reason:** {reason}"
+        else:
+            message = "🔒 **Issue 已关闭 | Issue Closed**\n\n由管理员手动关闭。\nManually closed by administrator."
+        
+        issue.create_comment(message)
+        print(f"Issue #{issue.number} closed. Reason: {reason if reason else 'No reason provided'}")
+        
+    except Exception as e:
+        issue.create_comment(f"❌ **关闭失败 | Failed to close**\n\n```\n{e}\n```")
+        print(f"Error closing issue: {e}")
 
 if __name__ == "__main__":
     main()

@@ -12,7 +12,7 @@ body:
     id: name
     attributes:
       label: 站点 ID 或名称 (Site ID or Name)
-      description: 推荐填写站点 ID (如 123)，可在站点详情页地址栏或 GitHub 链接中找到。 (Recommended: Provide the Site ID from the URL or GitHub link)
+      description: 推荐填写站点 ID (如 123)，可在站点详情页地址栏或 GitHub 链接中找到。 (Recommended Provide the Site ID from the URL or GitHub link)
       placeholder: "123"
     validations:
       required: true
@@ -55,7 +55,6 @@ body:
         - label: resource-site (资源下载)
         - label: read-news (阅读资讯)
         - label: lifestyle (生活趣味)
-
 
   - type: textarea
     id: description
