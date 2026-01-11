@@ -1,0 +1,13 @@
+{
+  "id": "test",
+  "name": "Normalization Test",
+  "url": "https://norm.test",
+  "categories": [
+    "dev-tools"
+  ],
+  "cover": "",
+  "added_at": "2026-01-09",
+  "last_check": "2026-01-09 00:00",
+  "status": "active",
+  "description_md": "Testing normalization logic."
+}

@@ -46,7 +46,11 @@ function main() {
 
         fs.writeFileSync(path.join(siteDir, 'index.html'), finalHtml);
         count++;
-    });
+    })
+
+    // 3. Generate 404.html fallback for SPAs
+    fs.writeFileSync(path.join(DIST_DIR, '404.html'), template);
+    console.log(`✅ Generated 404.html fallback`);
 
     console.log(`✅ Generated ${count} pages in dist/site/`);
 }

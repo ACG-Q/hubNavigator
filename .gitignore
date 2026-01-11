@@ -1,3 +1,5 @@
 .shared
+.agent
 dist
 node_modules
+design_doc_*.md
