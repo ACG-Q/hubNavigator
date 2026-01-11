@@ -29,39 +29,39 @@ body:
     validations:
       required: true
 
-  - type: dropdown
-    id: category
+  - type: checkboxes
+    id: categories
     attributes:
-      label: 核心分类 (Category)
-      description: 请选择最匹配的一个分类 (参考 docs/site_categories.md)
+      label: 核心分类 (Categories)
+      description: 请勾选最匹配的一个或多个分类 (Select one or more matching categories)
       options:
-        - ai-chat (AI 对话)
-        - ai-writing (AI 写作)
-        - ai-audio-video (AI 音视频)
-        - ai-drawing (AI 绘画)
-        - ai-dev (AI 编程)
-        - dev-frontend (前端开发)
-        - dev-backend (后端/架构)
-        - dev-tools (在线工具)
-        - dev-resources (技术资源)
-        - web3-crypto (Web3/区块链)
-        - design-inspiration (灵感采集)
-        - design-assets (设计素材)
-        - design-icons (图标字体)
-        - design-color (配色排版)
-        - design-tools (设计工具)
-        - image-tools (图片处理)
-        - video-tools (视频工具)
-        - audio-tools (音频工具)
-        - product-ops (产品运营)
-        - marketing-seo (营销/SEO)
-        - indie-maker (独立开发)
-        - efficiency (效率办公)
-        - resource-site (资源下载)
-        - read-news (阅读资讯)
-        - lifestyle (生活趣味)
+        - label: ai-chat (AI 对话)
+        - label: ai-writing (AI 写作)
+        - label: ai-audio-video (AI 音视频)
+        - label: ai-drawing (AI 绘画)
+        - label: ai-dev (AI 编程)
+        - label: dev-frontend (前端开发)
+        - label: dev-backend (后端/架构)
+        - label: dev-tools (在线工具)
+        - label: dev-resources (技术资源)
+        - label: web3-crypto (Web3/区块链)
+        - label: design-inspiration (灵感采集)
+        - label: design-assets (设计素材)
+        - label: design-icons (图标字体)
+        - label: design-color (配色排版)
+        - label: design-tools (设计工具)
+        - label: image-tools (图片处理)
+        - label: video-tools (视频工具)
+        - label: audio-tools (音频工具)
+        - label: product-ops (产品运营)
+        - label: marketing-seo (营销/SEO)
+        - label: indie-maker (独立开发)
+        - label: efficiency (效率办公)
+        - label: resource-site (资源下载)
+        - label: read-news (阅读资讯)
+        - label: lifestyle (生活趣味)
     validations:
-      required: true
+      min_selected: 1
 
   - type: input
     id: cover

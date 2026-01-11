@@ -57,7 +57,7 @@ function updateTemplates(categories) {
             let optionsEndIndex = -1;
 
             for (let i = 0; i < lines.length; i++) {
-                if (lines[i].includes('id: category')) inCategoryDropdown = true;
+                if (lines[i].includes('id: categories')) inCategoryDropdown = true;
                 if (inCategoryDropdown && lines[i].includes('options:')) {
                     optionsStartIndex = i + 1;
                     // Find where options end (next field at same indentation or end of file)
@@ -73,7 +73,7 @@ function updateTemplates(categories) {
             }
 
             if (optionsStartIndex !== -1 && optionsEndIndex !== -1) {
-                const newOptionsLines = options.map(opt => `        - ${opt}`);
+                const newOptionsLines = options.map(opt => `        - label: ${opt}`);
                 lines.splice(optionsStartIndex, optionsEndIndex - optionsStartIndex, ...newOptionsLines);
                 fs.writeFileSync(fullPath, lines.join('\n'));
                 console.log(`✅ Updated template: ${relPath}`);

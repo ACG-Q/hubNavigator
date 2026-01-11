@@ -43,7 +43,17 @@ function parseFormBody(body) {
         else if (rawKey.includes('原站点链接')) data.original_url = value;
         else if (rawKey.includes('新站点链接')) data.new_url = value;
         else if (rawKey.includes('核心分类')) {
-            data.category = value.split(' ')[0];
+            // Checkboxes format:
+            // - [ ] id (Name)
+            // - [x] id (Name)
+            const lines = value.split('\n');
+            data.categories = lines
+                .filter(l => l.trim().startsWith('- [x]'))
+                .map(l => {
+                    const match = l.match(/- \[x\]\s+([\w-]+)\s*/);
+                    return match ? match[1] : null;
+                })
+                .filter(Boolean);
         }
         else if (rawKey.includes('封面图')) data.cover = value;
         else if (rawKey.includes('详细介绍') || rawKey.includes('变更说明') || rawKey.includes('修正说明')) {
@@ -116,7 +126,7 @@ async function main() {
                 id: issueId,
                 name: formData.name,
                 url: formData.url,
-                categories: formData.category ? [formData.category] : [],
+                categories: formData.categories || [],
                 status: 'active',
                 type: 'correction'
             };
@@ -130,7 +140,7 @@ async function main() {
                 id: issueId,
                 name: formData.name,
                 url: formData.url,
-                categories: [formData.category],
+                categories: formData.categories || [],
                 cover: formData.cover || '',
                 added_at: now,
                 last_check: `${now} 00:00`,
