@@ -1,0 +1,17 @@
+{
+  "id": "6",
+  "name": "Gemini",
+  "url": "https://gemini.google.com/",
+  "categories": [
+    "ai-chat",
+    "ai-writing",
+    "ai-audio-video",
+    "ai-drawing",
+    "ai-dev"
+  ],
+  "cover": "",
+  "added_at": "2026-01-11",
+  "last_check": "2026-01-11 00:00",
+  "status": "active",
+  "description_md": "测试2，看看我不回复，是否还会自动active"
+}
