@@ -8,13 +8,13 @@
 
 | 工作流名称 | 文件路径 | 触发方式 | 主要功能 |
 |:---|:---|:---|:---|
-| **Issue Parser** | `.github/workflows/issue_parser.yml` | Issue 创建/编辑 | 解析并规范化 Issue 内容 |
-| **Core Automation** | `.github/workflows/cron_job.yml` | 定时/手动/Push | 健康检查与数据同步 |
-| **ChatOps** | `.github/workflows/ops.yml` | Issue 评论 | 处理管理员命令 |
-| **Deploy to Pages** | `.github/workflows/deploy.yml` | Push to main | 构建并部署前端 |
-| **Weekly Backup** | `.github/workflows/backup.yml` | 每周日/手动 | 数据备份 |
-| **Init Labels** | `.github/workflows/init_labels.yml` | 手动触发 | 初始化标签系统 |
-| **OPS: Add Category** | `.github/workflows/ops_add_category.yml` | 手动触发 | 批准新分类申请 |
+| **Issue Parser** | `.github/workflows/issue_parser.yml` | Issue 变更 (Open/Edit/Close) | 解析、规范化并自动同步 Issue 数据 |
+| **Core Automation** | `.github/workflows/cron_job.yml` | 定时 (30m) / 手动 / 数据 Push | 健康检查、数据聚合与全网索引同步 |
+| **ChatOps** | `.github/workflows/ops.yml` | Issue 评论 (`/` 指令) | 执行管理员指令即时更新站点状态 |
+| **Deploy to Pages** | `.github/workflows/deploy.yml` | 每晚定时 / 手动触发 | 构建前端代码并生成静态详情页 (SSG) |
+| **Weekly Backup** | `.github/workflows/backup.yml` | 每周日定时 / 手动触发 | 同步 `data/` 目录至 `backup` 分支 |
+| **Init Labels** | `.github/workflows/init_labels.yml` | 手动触发 / 脚本更新 (Push) | 初始化并规范化仓库的标签体系 |
+| **OPS: Add Category** | `.github/workflows/ops_add_category.yml` | 手动触发 | 处理新分类申请并同步 Issue 模板 |
 
 ---
 
@@ -32,6 +32,7 @@ on:
 - `kind:site`
 - `kind:domain-migration`
 - `kind:correction`
+- `kind:new-category`
 
 ### 执行流程
 
@@ -61,7 +62,10 @@ graph TD
    - 修正/迁移：`status: triage`（需审核）
 4. **ID 提取**：从用户输入中智能提取目标站点 ID
 5. **多分类支持**：解析 checkboxes 格式的分类选择
-6. **文件生成**：创建 `data/items/site_issue_<ID>.json`
+6. **生命周期管理**：
+   - `Issue Closed`：自动删除对应的 JSON 文件。
+   - `Issue Reopened`：自动根据 Issue 内容重新生成 JSON 文件。
+7. **数据同步**：执行后自动触发 `build_site_all.js` 确保聚合数据实时更新。
 
 **输出示例**：
 ```json
@@ -207,9 +211,9 @@ graph TD
 ### 触发条件
 ```yaml
 on:
-  push:
-    branches: ["main"]
-  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * *'  # 每天北京时间 08:00
+  workflow_dispatch:      # 手动触发
 ```
 
 ### 执行流程
@@ -271,7 +275,10 @@ graph TD
 ### 触发条件
 ```yaml
 on:
-  workflow_dispatch:  # 仅手动触发
+  push:
+    paths:
+      - 'scripts/manage_labels.py' # 脚本更新时自动运行
+  workflow_dispatch:               # 手动触发
 ```
 
 ### 执行流程
