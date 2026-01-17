@@ -4,7 +4,7 @@ name: 📝 Issue Parser
 # 注意：parser 会更新 Issue body，但通过条件判断避免循环触发
 on:
   issues:
-    types: [opened, edited]
+    types: [opened, edited, labeled, unlabeled]
 
 # 并发控制：同一 Issue 同时只能有一个 parser 运行
 concurrency:
