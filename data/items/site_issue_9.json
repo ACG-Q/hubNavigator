@@ -1,0 +1,16 @@
+{
+  "id": "9",
+  "name": "Google 翻译",
+  "url": "https://translate.google.com/",
+  "categories": [
+    "dev-tools",
+    "dev-resources",
+    "indie-maker",
+    "efficiency"
+  ],
+  "cover": "",
+  "added_at": "2026-01-17",
+  "last_check": "2026-01-17 00:00",
+  "status": "triage",
+  "description_md": "测试5 测试"
+}
