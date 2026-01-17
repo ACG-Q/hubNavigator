@@ -1,9 +1,9 @@
 name: 🚀 Deploy to Pages
 
-# 触发条件：当 main 分支有代码推送到仓库时
+# 触发条件：每天 00:00 UTC (北京时间 08:00) 运行，或手动触发
 on:
-  push:
-    branches: [ "main" ]
+  schedule:
+    - cron: '0 0 * * *'
   workflow_dispatch:
 
 permissions:
@@ -18,29 +18,53 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      should_deploy: ${{ steps.check_changes.outputs.should_deploy }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch all history for git log
+
+      - name: Check for updates
+        id: check_changes
+        run: |
+          # Check if there are commits in data/ or src/ in the last 24 hours
+          # Or simply check if the latest commit touched these folders (assuming cron runs frequently)
+          # A safer bet for "nightly" is checking if any commit since yesterday touched relevant files.
+          CHANGED=$(git log --since="24 hours ago" --name-only -- data/ src/ scripts/ index.html vite.config.js)
+          if [ -z "$CHANGED" ] && [ "${{ github.event_name }}" == "schedule" ]; then
+            echo "No changes in data or src in the last 24 hours. Skipping deploy."
+            echo "should_deploy=false" >> $GITHUB_OUTPUT
+          else
+            echo "Changes detected or manual trigger."
+            echo "should_deploy=true" >> $GITHUB_OUTPUT
+          fi
 
       - name: Setup Node
+        if: steps.check_changes.outputs.should_deploy == 'true'
         uses: actions/setup-node@v3
         with:
           node-version: 20
           cache: 'npm'
 
       - name: Install
+        if: steps.check_changes.outputs.should_deploy == 'true'
         run: npm ci
 
       - name: Unsafe Perm Check
         # 执行项目构建（使用 Vite）
+        if: steps.check_changes.outputs.should_deploy == 'true'
         run: npm run build
 
       - name: Generate SSG Pages
         # 执行静态生成脚本，为每个站点生成独立的详情页，确保 SEO 友好
+        if: steps.check_changes.outputs.should_deploy == 'true'
         run: node scripts/ssg_generator.js
 
       - name: Upload artifact
         # 上传编译产物到 GitHub Pages
+        if: steps.check_changes.outputs.should_deploy == 'true'
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./dist
@@ -52,6 +76,7 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     needs: build
+    if: needs.build.outputs.should_deploy == 'true'
     steps:
       - name: Deploy to GitHub Pages
         id: deployment

@@ -1,9 +1,10 @@
 <script setup>
 import { useI18n } from 'vue-i18n'
+import { computed } from 'vue'
 import categoriesData from '../../data/categories.json'
 
 const { locale } = useI18n()
-defineProps({
+const props = defineProps({
   site: {
     type: Object,
     required: true
@@ -24,6 +25,14 @@ const getIconUrl = (url) => {
     return ''
   }
 }
+
+const visibleCategories = computed(() => {
+  return props.site.categories ? props.site.categories.slice(0, 2) : []
+})
+
+const remainingCount = computed(() => {
+  return props.site.categories ? Math.max(0, props.site.categories.length - 2) : 0
+})
 </script>
 
 <template>
@@ -46,9 +55,12 @@ const getIconUrl = (url) => {
             @error="$event.target.style.display='none'"
           />
         </div>
-        <div class="flex gap-1">
-           <span v-for="cat in site.categories" :key="cat" class="text-[10px] uppercase font-bold tracking-wider px-2 py-1 rounded-full bg-gray-100 dark:bg-gray-700/50 text-gray-500 dark:text-gray-400">
+        <div class="flex gap-1 flex-wrap justify-end max-w-[65%]">
+           <span v-for="cat in visibleCategories" :key="cat" class="text-[10px] uppercase font-bold tracking-wider px-2 py-1 rounded-full bg-gray-100 dark:bg-gray-700/50 text-gray-500 dark:text-gray-400 whitespace-nowrap">
              {{ getCategoryName(cat) }}
+           </span>
+           <span v-if="remainingCount > 0" class="text-[10px] font-bold px-2 py-1 rounded-full bg-gray-50 dark:bg-gray-800 text-gray-400 border border-gray-100 dark:border-gray-700">
+             +{{ remainingCount }}
            </span>
         </div>
       </div>
