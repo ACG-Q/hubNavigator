@@ -185,7 +185,20 @@ async function main() {
 
     // Use ISSUE_ID for filename
     const filePath = path.join(ITEMS_DIR, `site_issue_${issueId}.json`);
-    fs.writeFileSync(filePath, JSON.stringify(jsonOutput, null, 2));
+    const newContent = JSON.stringify(jsonOutput, null, 2);
+
+    // Check for changes (Idempotency)
+    if (fs.existsSync(filePath)) {
+        const currentContent = fs.readFileSync(filePath, 'utf8');
+        // Simple string comparison works because JSON.stringify is deterministic for simple objects
+        // However, key order might differ if logic changed, but usually fine.
+        if (currentContent.trim() === newContent.trim()) {
+            console.log(`[SKIP] No changes detected for ${filePath}. Skipping write.`);
+            return;
+        }
+    }
+
+    fs.writeFileSync(filePath, newContent);
     console.log(`Generated: ${filePath}`);
 }
 

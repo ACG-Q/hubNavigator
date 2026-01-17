@@ -9,7 +9,7 @@ on:
 # 并发控制：同一 Issue 同时只能有一个 parser 运行
 concurrency:
   group: issue-parser-${{ github.event.issue.number }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   parse:
