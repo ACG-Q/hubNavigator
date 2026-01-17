@@ -8,16 +8,26 @@ const { Octokit } = require('@octokit/rest');
 const CATEGORIES_PATH = path.join(__dirname, '../config/categories.yaml');
 const ITEMS_DIR = path.join(__dirname, '../data/items');
 
-// Load Categories
-const categories = yaml.load(fs.readFileSync(CATEGORIES_PATH, 'utf8'));
-const validCategoryIds = categories.map(c => c.id);
-
 // GitHub Client
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const GITHUB_REPO = process.env.GITHUB_REPOSITORY; // "owner/repo"
 const ISSUE_NUMBER = process.env.ISSUE_NUMBER;
+const ISSUE_LABELS_STR = process.env.ISSUE_LABELS || '';
 
 const octokit = GITHUB_TOKEN ? new Octokit({ auth: GITHUB_TOKEN }) : null;
+
+/**
+ * Determine site status from labels
+ */
+function determineStatus(labels) {
+    if (labels.includes('triage')) return 'triage';
+    if (labels.includes('status:warning')) return 'warning';
+    if (labels.includes('status:broken')) return 'broken';
+    if (labels.includes('status:active')) return 'active';
+
+    // 默认值：如果没有以上任何标签，设为 triage 以保安全
+    return 'triage';
+}
 
 /**
  * Parsed Issue Form Body (Markdown) into a key-value object.
@@ -44,9 +54,6 @@ function parseFormBody(body) {
         else if (rawKey.includes('新站点链接')) data.new_url = value;
         else if (rawKey.includes('站点 ID')) data.target_id = value;
         else if (rawKey.includes('核心分类')) {
-            // Checkboxes format:
-            // - [ ] id (Name)
-            // - [x] id (Name)
             const lines = value.split('\n');
             data.categories = lines
                 .filter(l => l.trim().startsWith('- [x]'))
@@ -58,7 +65,6 @@ function parseFormBody(body) {
         }
         else if (rawKey.includes('封面图')) data.cover = value;
         else if (rawKey.includes('详细介绍') || rawKey.includes('变更说明') || rawKey.includes('修正说明')) {
-            // Ensure double newlines so they don't "clump" in markdown
             data.description = value.replace(/\r\n/g, '\n').split('\n').filter(l => l.trim()).join('\n\n');
         }
     });
@@ -66,18 +72,12 @@ function parseFormBody(body) {
 }
 
 async function updateIssueBody(owner, repo, issue_number, newBody) {
-    if (!octokit) {
-        console.warn("No GITHUB_TOKEN, skipping Issue Update.");
-        return;
-    }
+    if (!octokit) return;
     try {
         await octokit.issues.update({
-            owner,
-            repo,
-            issue_number,
-            body: newBody
+            owner, repo, issue_number, body: newBody
         });
-        console.log(`[UPDATE] Issue #${issue_number} body normalized to Front Matter.`);
+        console.log(`[UPDATE] Issue #${issue_number} body updated.`);
     } catch (e) {
         console.error("Failed to update issue:", e);
     }
@@ -86,16 +86,25 @@ async function updateIssueBody(owner, repo, issue_number, newBody) {
 async function main() {
     const issueBody = process.env.ISSUE_BODY;
     let issueId = process.env.ISSUE_ID || 'test';
+    const labels = ISSUE_LABELS_STR.split(',').map(l => l.trim()).filter(Boolean);
 
     if (!issueBody) {
         console.log("No ISSUE_BODY provided.");
         return;
     }
 
-    // Check Format
-    const isFrontMatter = issueBody.startsWith('---');
+    // Determine Logic based on Labels/Type
+    const isMigration = labels.includes('kind:domain-migration');
+    const isCorrection = labels.includes('kind:correction');
+    const isSite = labels.includes('kind:site');
+
+    // Determine Status from Labels (Source of Truth)
+    const currentStatus = determineStatus(labels);
+
+    // Initial Parsing
     let itemData = {};
     let descriptionRaw = "";
+    const isFrontMatter = issueBody.startsWith('---');
 
     if (isFrontMatter) {
         console.log("Format: Front Matter detected.");
@@ -106,99 +115,92 @@ async function main() {
         console.log("Format: Raw Form detected. Normalizing...");
         const formData = parseFormBody(issueBody);
 
-        // Determine if it's a migration or correction
-        const labels = (process.env.ISSUE_LABELS || '').split(',');
-        const isMigration = labels.includes('kind:domain-migration');
-        const isCorrection = labels.includes('kind:correction');
-        const isTriage = labels.includes('triage');
-
-        const now = new Date().toISOString().split('T')[0];
-
+        // Initial Defaults based on Type
         if (isMigration) {
             let targetId = formData.target_id || '';
             const idMatch = targetId.match(/(?:site_issue_)?(\d+)/);
             if (idMatch) targetId = idMatch[1];
-
             itemData = {
-                id: issueId,
-                target_id: targetId,
-                url: formData.new_url,
-                added_at: now,
-                status: 'triage',
-                type: 'migration'
+                id: issueId, target_id: targetId, url: formData.new_url,
+                added_at: new Date().toISOString().split('T')[0], type: 'migration'
             };
         } else if (isCorrection) {
-            // Try to extract ID from name input if it looks like a number or site_issue_XXX
-            let targetId = formData.name;
-            const idMatch = formData.name.match(/(?:site_issue_)?(\d+)/);
+            let targetId = formData.name; // User might put ID in name field
+            const idMatch = formData.name ? formData.name.match(/(?:site_issue_)?(\d+)/) : null;
             if (idMatch) targetId = idMatch[1];
-
             itemData = {
-                id: issueId,
-                target_id: targetId,
-                name: formData.name,
-                url: formData.url,
-                categories: formData.categories || [],
-                status: 'triage',
-                type: 'correction'
+                id: issueId, target_id: targetId, name: formData.name, url: formData.url,
+                categories: formData.categories || [], type: 'correction'
             };
         } else {
-            // Default: New Site Submission
+            // Default Site
             if (!formData.name || !formData.url) {
-                console.error("Missing required fields in form data.");
+                console.error("Missing required fields.");
                 process.exit(1);
             }
             itemData = {
-                id: issueId,
-                name: formData.name,
-                url: formData.url,
-                categories: formData.categories || [],
-                cover: formData.cover || '',
-                added_at: now,
-                last_check: `${now} 00:00`,
-                status: isTriage ? 'triage' : 'active' // Sites are triage by default if label exists, otherwise active
+                id: issueId, name: formData.name, url: formData.url,
+                categories: formData.categories || [], cover: formData.cover || '',
+                added_at: new Date().toISOString().split('T')[0],
+                last_check: `${new Date().toISOString().split('T')[0]} 00:00`
             };
         }
+        descriptionRaw = formData.description || '';
+    }
 
-        descriptionRaw = formData.description;
+    // Force Update Status from Labels (if it's a site)
+    // For corrections/migrations, we usually keep them in triage until merged.
+    if (!isMigration && !isCorrection) {
+        // It's a site (or untyped).
+        // Check if status changed
+        if (itemData.status !== currentStatus) {
+            console.log(`[STATUS CHANGE] ${itemData.status} -> ${currentStatus}`);
+            itemData.status = currentStatus;
+        }
+    } else {
+        // For Ops issues, usually fixed 'triage'.
+        itemData.status = 'triage';
+    }
 
-        // Construct New Body ALWAYS as front-matter
-        const newBody = matter.stringify(descriptionRaw, itemData);
+    // Generate New Body
+    const newBody = matter.stringify(descriptionRaw, itemData);
 
-        // Update GitHub Issue to persist normalized data
+    // Check if body update is needed
+    // Normalize newlines for comparison
+    const normalizedCurrent = issueBody.replace(/\r\n/g, '\n').trim();
+    const normalizedNew = newBody.replace(/\r\n/g, '\n').trim();
+
+    if (normalizedCurrent !== normalizedNew) {
         if (GITHUB_REPO && ISSUE_NUMBER) {
             const [owner, repo] = GITHUB_REPO.split('/');
             await updateIssueBody(owner, repo, parseInt(ISSUE_NUMBER), newBody);
         }
+    } else {
+        console.log("[SKIP] Issue Body is already up to date.");
     }
 
-    // Generate JSON Artifact
-    const jsonOutput = {
-        ...itemData,
-        description_md: descriptionRaw.trim()
-    };
+    // Generate JSON (only for sites or logic that needs it)
+    // We generate JSON for all types so they can be processed? 
+    // Actually we only need JSON for 'kind:site' usually.
+    // Ops workflows rely on JSON for metadata too.
 
-    // Ensure data/items exists
-    if (!fs.existsSync(ITEMS_DIR)) {
-        fs.mkdirSync(ITEMS_DIR, { recursive: true });
-    }
+    const jsonOutput = { ...itemData, description_md: descriptionRaw.trim() };
+
+    if (!fs.existsSync(ITEMS_DIR)) fs.mkdirSync(ITEMS_DIR, { recursive: true });
 
     // Use ISSUE_ID for filename
     const filePath = path.join(ITEMS_DIR, `site_issue_${issueId}.json`);
-    const newContent = JSON.stringify(jsonOutput, null, 2);
+    const newJsonContent = JSON.stringify(jsonOutput, null, 2);
 
-    // Check for changes (Idempotency)
     if (fs.existsSync(filePath)) {
-        const currentContent = fs.readFileSync(filePath, 'utf8');
-        // Simple string comparison works because JSON.stringify is deterministic for simple objects
-        // However, key order might differ if logic changed, but usually fine.
-        if (currentContent.trim() === newContent.trim()) {
+        const currentJson = fs.readFileSync(filePath, 'utf8');
+        if (currentJson.trim() === newJsonContent.trim()) {
             console.log(`[SKIP] No changes detected for ${filePath}. Skipping write.`);
             return;
         }
     }
 
-    fs.writeFileSync(filePath, newContent);
+    fs.writeFileSync(filePath, newJsonContent);
     console.log(`Generated: ${filePath}`);
 }
 
