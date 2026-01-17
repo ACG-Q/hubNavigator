@@ -13,6 +13,7 @@ const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const GITHUB_REPO = process.env.GITHUB_REPOSITORY; // "owner/repo"
 const ISSUE_NUMBER = process.env.ISSUE_NUMBER;
 const ISSUE_LABELS_STR = process.env.ISSUE_LABELS || '';
+const ISSUE_STATE = process.env.ISSUE_STATE || 'open'; // Default to open if missing
 
 const octokit = GITHUB_TOKEN ? new Octokit({ auth: GITHUB_TOKEN }) : null;
 
@@ -87,6 +88,18 @@ async function main() {
     const issueBody = process.env.ISSUE_BODY;
     let issueId = process.env.ISSUE_ID || 'test';
     const labels = ISSUE_LABELS_STR.split(',').map(l => l.trim()).filter(Boolean);
+
+    // Handle Closed Issues (Delete Data)
+    if (ISSUE_STATE === 'closed') {
+        const filePath = path.join(ITEMS_DIR, `site_issue_${issueId}.json`);
+        if (fs.existsSync(filePath)) {
+            fs.unlinkSync(filePath);
+            console.log(`[DELETE] Issue #${issueId} is closed. Deleted ${filePath}`);
+        } else {
+            console.log(`[SKIP] Issue #${issueId} is closed, but ${filePath} does not exist.`);
+        }
+        return; // Exit script
+    }
 
     if (!issueBody) {
         console.log("No ISSUE_BODY provided.");

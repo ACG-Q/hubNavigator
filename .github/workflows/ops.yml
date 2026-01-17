@@ -51,19 +51,23 @@ jobs:
           ISSUE_ID: ${{ github.event.issue.number }}
         run: |
           # Fetch latest issue state (body & labels) because python script might have changed them
-          gh issue view $ISSUE_NUMBER --json body,labels > issue_data.json
+          gh issue view $ISSUE_NUMBER --json body,labels,state > issue_data.json
           
           export ISSUE_BODY=$(jq -r .body issue_data.json)
           # Join labels with comma
           export ISSUE_LABELS=$(jq -r '.labels[].name' issue_data.json | paste -sd "," -)
+          export ISSUE_STATE=$(jq -r .state issue_data.json)
           
           echo "Running parser with updated issue data..."
           node scripts/parser.js
+
+      - name: Sync Site Data
+        run: node scripts/build_site_all.js
 
       - name: Commit Changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "🤖 Auto: Sync data after ChatOps command [skip ci]"
-          file_pattern: 'data/items/*.json'
+          file_pattern: 'data/items/*.json data/site_all.json data/categories.json public/sitemap.xml'
           skip_fetch: false
           skip_checkout: false

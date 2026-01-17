@@ -4,7 +4,7 @@ name: 📝 Issue Parser
 # 注意：parser 会更新 Issue body，但通过条件判断避免循环触发
 on:
   issues:
-    types: [opened, edited]
+    types: [opened, edited, reopened]
 
 # 并发控制：同一 Issue 同时只能有一个 parser 运行
 concurrency:
@@ -42,14 +42,20 @@ jobs:
           ISSUE_NUMBER: ${{ github.event.issue.number }}
           ISSUE_BODY: ${{ github.event.issue.body }}
           ISSUE_LABELS: ${{ join(github.event.issue.labels.*.name, ',') }}
+          ISSUE_STATE: ${{ github.event.issue.state }}
+          ISSUE_ID: ${{ github.event.issue.number }}
           ISSUE_ID: ${{ github.event.issue.number }}
         run: node scripts/parser.js
+
+      - name: Sync Site Data
+        # 聚合所有站点数据 生成 site_all.json 和 sitemap.xml
+        run: node scripts/build_site_all.js
 
       - name: Commit Changes
         # 将生成的 JSON 数据文件同步回仓库
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "🤖 Auto: Normalize Issue #${{ github.event.issue.number }} to Front Matter"
-          file_pattern: 'data/items/*.json'
+          file_pattern: 'data/items/*.json data/site_all.json data/categories.json public/sitemap.xml'
           skip_fetch: false
           skip_checkout: false
