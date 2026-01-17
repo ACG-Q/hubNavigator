@@ -17,6 +17,12 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - name: Pull Latest Changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git pull origin master --rebase
+
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
@@ -24,12 +30,6 @@ jobs:
 
       - name: Install dependencies
         run: npm install
-
-      - name: Pull Latest Changes
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git pull origin master --rebase
 
       - name: Run Add Category Script
         env:
