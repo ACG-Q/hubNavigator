@@ -24,7 +24,7 @@
 ```yaml
 on:
   issues:
-    types: [opened, edited, labeled]
+    types: [opened, edited, reopened, closed]
 ```
 
 ### 过滤条件
@@ -37,23 +37,17 @@ on:
 
 ```mermaid
 graph TD
-    A[Issue 创建/编辑] --> B{包含目标标签?}
+    A[Issue 变更 (Open/Edit/Close)] --> B{包含目标标签?}
     B -->|否| C[跳过]
     B -->|是| D[运行 parser.js]
-    D --> E{Issue 格式}
-    E -->|Front Matter| F[直接解析元数据]
-    E -->|表单格式| G[解析表单字段]
-    G --> H[提取关键信息]
-    H --> I{Issue 类型}
-    I -->|kind:site| J[生成站点数据]
-    I -->|kind:correction| K[生成修正数据]
-    I -->|kind:domain-migration| L[生成迁移数据]
-    J --> M[构建 Front Matter]
-    K --> M
-    L --> M
-    M --> N[更新 Issue Body]
-    N --> O[保存 JSON 文件]
-    O --> P[提交到 data/items/]
+    D --> E{Issue 状态}
+    E -->|Closed| F[删除对应 JSON]
+    E -->|Open| G[解析内容生成 JSON]
+    G --> H[更新 Issue Body]
+    F --> I[运行 build_site_all.js]
+    H --> I
+    I --> J[生成 site_all.json & sitemap.xml]
+    J --> K[提交数据变更]
 ```
 
 ### 关键脚本

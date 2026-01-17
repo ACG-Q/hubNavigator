@@ -47,9 +47,14 @@
 ### 3.1 Issue Parser 触发条件
 
 ```yaml
+on:
+  issues:
+    types: [opened, edited, reopened, closed]
+
 if: contains(github.event.issue.labels.*.name, 'kind:site') || 
     contains(github.event.issue.labels.*.name, 'kind:domain-migration') || 
-    contains(github.event.issue.labels.*.name, 'kind:correction')
+    contains(github.event.issue.labels.*.name, 'kind:correction') ||
+    contains(github.event.issue.labels.*.name, 'kind:new-category')
 ```
 
 ### 3.2 Health Check 处理范围
