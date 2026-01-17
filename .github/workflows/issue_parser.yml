@@ -49,7 +49,6 @@ jobs:
           ISSUE_LABELS: ${{ join(github.event.issue.labels.*.name, ',') }}
           ISSUE_STATE: ${{ github.event.issue.state }}
           ISSUE_ID: ${{ github.event.issue.number }}
-          ISSUE_ID: ${{ github.event.issue.number }}
         run: node scripts/parser.js
 
       - name: Sync Site Data
