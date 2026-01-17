@@ -14,7 +14,6 @@ const GITHUB_REPO = process.env.GITHUB_REPOSITORY; // "owner/repo"
 const ISSUE_NUMBER = process.env.ISSUE_NUMBER;
 const ISSUE_LABELS_STR = process.env.ISSUE_LABELS || '';
 const ISSUE_STATE = process.env.ISSUE_STATE || 'open'; // Default to open if missing
-console.log(`DEBUG: ISSUE_STATE = "${ISSUE_STATE}"`);
 
 const octokit = GITHUB_TOKEN ? new Octokit({ auth: GITHUB_TOKEN }) : null;
 
