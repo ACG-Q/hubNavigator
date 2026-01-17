@@ -25,6 +25,12 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Pull Latest Changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git pull origin master --rebase
+
       - name: Run Add Category Script
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -45,6 +45,12 @@ jobs:
       - name: Install Node.js Deps
         run: npm install
 
+      - name: Pull Latest Changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git pull origin master --rebase
+
       - name: 🏥 Run Health Check
         # 执行巡检脚本，检查链接有效性并同步 Issue 标签
         env:

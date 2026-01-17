@@ -34,8 +34,13 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
+      - name: Pull Latest Changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git pull origin master --rebase
+
       - name: Run Parser
-        # 运行解析脚本，将 Issue 的 Markdown 表单转换为带有 Front Matter 的格式
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
@@ -48,11 +53,9 @@ jobs:
         run: node scripts/parser.js
 
       - name: Sync Site Data
-        # 聚合所有站点数据 生成 site_all.json 和 sitemap.xml
         run: node scripts/build_site_all.js
 
       - name: Commit Changes
-        # 将生成的 JSON 数据文件同步回仓库
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "🤖 Auto: Normalize Issue #${{ github.event.issue.number }} to Front Matter"
