@@ -34,3 +34,36 @@ jobs:
           COMMENT_BODY: ${{ github.event.comment.body }}
           COMMENT_AUTHOR: ${{ github.event.comment.user.login }}
         run: python scripts/comment_ops.py
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Node Deps
+        run: npm install
+
+      - name: Run Parser (Sync Data)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          ISSUE_ID: ${{ github.event.issue.number }}
+        run: |
+          # Fetch latest issue state (body & labels) because python script might have changed them
+          gh issue view $ISSUE_NUMBER --json body,labels > issue_data.json
+          
+          export ISSUE_BODY=$(jq -r .body issue_data.json)
+          # Join labels with comma
+          export ISSUE_LABELS=$(jq -r '.labels[].name' issue_data.json | paste -sd "," -)
+          
+          echo "Running parser with updated issue data..."
+          node scripts/parser.js
+
+      - name: Commit Changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "🤖 Auto: Sync data after ChatOps command [skip ci]"
+          file_pattern: 'data/items/*.json'
+          skip_fetch: false
+          skip_checkout: false
