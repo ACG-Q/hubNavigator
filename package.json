@@ -2,15 +2,15 @@
     "name": "hub-navigator",
     "version": "1.0.0",
     "description": "Automated Navigation Station",
-    "main": "scripts/parser.js",
+    "main": "automation/add_site.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "parser": "node scripts/parser.js",
+        "parser": "node automation/add_site.js",
         "dev": "vite",
         "dev:mock": "cross-env VITE_MOCK=true vite",
         "build": "vite build",
-        "ssg": "node scripts/ssg_generator.js",
-        "backup": "bash scripts/backup_data.sh",
+        "ssg": "node automation/ssg.js",
+        "backup": "node automation/backup.js",
         "preview": "vite preview"
     },
     "dependencies": {

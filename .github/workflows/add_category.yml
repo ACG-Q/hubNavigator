@@ -1,4 +1,4 @@
-name: "🚀 Add Category"
+name: Add Category
 
 on:
   issues:
@@ -41,7 +41,7 @@ jobs:
       - name: Aggregate Data
         run: node automation/aggregate.js
 
-      - name: 🚀 Commit & Push Changes
+      - name: Commit & Push Changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "🤖 Auto: Add category via Issue #${{ github.event.issue.number || github.event.inputs.issue_number }}"

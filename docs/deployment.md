@@ -35,6 +35,7 @@ const GlobalConfig = {
 
 1. 访问 [giscus.app](https://giscus.app/zh-CN)。
 2. 配置你的仓库（需在仓库设置中启用 Discussions 功能）。
+3. 为仓库安装[Giscus App](https://github.com/apps/giscus), 并赋予所有仓库\指定仓库的访问discussions的权限
 3. 获取生成的配置参数。
 4. 回填到 `src/config.js` 中：
 

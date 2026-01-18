@@ -1,21 +1,15 @@
-name: 📝 Issue Parser
+name: Issue Parser
 
-# 触发条件：Issue 创建或编辑时运行
-# 注意：parser 会更新 Issue body，但通过条件判断避免循环触发
 on:
   issues:
     types: [opened, edited, reopened, closed]
 
-# 并发控制：同一 Issue 同时只能有一个 parser 运行
 concurrency:
   group: issue-parser-${{ github.event.issue.number }}
   cancel-in-progress: true
 
 jobs:
   parse:
-    # 过滤器：
-    # 1. 仅处理带有特定标签的 Issue
-    # 2. 跳过已经包含 Front Matter 的 Issue（避免循环触发）
     if: contains(github.event.issue.labels.*.name, 'kind:site') || contains(github.event.issue.labels.*.name, 'kind:domain-migration') || contains(github.event.issue.labels.*.name, 'kind:correction')
     runs-on: ubuntu-latest
     permissions:

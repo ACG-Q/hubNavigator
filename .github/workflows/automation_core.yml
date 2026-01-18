@@ -1,4 +1,4 @@
-name: "⚙️ Automation Core"
+name: Automation Core
 
 on:
   schedule:
@@ -18,6 +18,11 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Update to latest
+        run: git pull origin ${{ github.ref_name }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -27,17 +32,17 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: 🏥 Health Check
+      - name: Health Check
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
         run: node automation/health.js
 
-      - name: � Aggregate Data
+      - name: Aggregate Data
         run: node automation/aggregate.js
 
-      - name: 🚀 Commit changes
+      - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "🤖 Auto: Data consistency & Health sync"
-          file_pattern: 'data/items/*.json data/*.json public/sitemap.xml'
+          file_pattern: 'data/ public/sitemap.xml'

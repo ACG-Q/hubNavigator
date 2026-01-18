@@ -1,6 +1,5 @@
-name: 🚀 Deploy to Pages
+name: Deploy to Pages
 
-# 触发条件：每天 00:00 UTC (北京时间 08:00) 运行，或手动触发
 on:
   schedule:
     - cron: '0 0 * * *'
@@ -24,15 +23,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Fetch all history for git log
+          fetch-depth: 0
 
       - name: Check for updates
         id: check_changes
         run: |
-          # Check if there are commits in data/ or src/ in the last 24 hours
-          # Or simply check if the latest commit touched these folders (assuming cron runs frequently)
-          # A safer bet for "nightly" is checking if any commit since yesterday touched relevant files.
-          CHANGED=$(git log --since="24 hours ago" --name-only -- data/ src/ scripts/ index.html vite.config.js)
+          CHANGED=$(git log --since="24 hours ago" --name-only -- data/ src/ automation/ index.html vite.config.js)
           if [ -z "$CHANGED" ] && [ "${{ github.event_name }}" == "schedule" ]; then
             echo "No changes in data or src in the last 24 hours. Skipping deploy."
             echo "should_deploy=false" >> $GITHUB_OUTPUT
@@ -43,7 +39,7 @@ jobs:
 
       - name: Setup Node
         if: steps.check_changes.outputs.should_deploy == 'true'
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'npm'
@@ -52,25 +48,21 @@ jobs:
         if: steps.check_changes.outputs.should_deploy == 'true'
         run: npm ci
 
-      - name: Unsafe Perm Check
-        # 执行项目构建（使用 Vite）
+      - name: Build Web App
         if: steps.check_changes.outputs.should_deploy == 'true'
         run: npm run build
 
       - name: Generate SSG Pages
-        # 执行静态生成脚本，为每个站点生成独立的详情页，确保 SEO 友好
         if: steps.check_changes.outputs.should_deploy == 'true'
-        run: node scripts/ssg_generator.js
+        run: npm run ssg
 
       - name: Upload artifact
-        # 上传编译产物到 GitHub Pages
         if: steps.check_changes.outputs.should_deploy == 'true'
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./dist
 
   deploy:
-    # 部署到 GitHub Pages 托管环境
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
