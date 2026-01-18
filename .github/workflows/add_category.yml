@@ -45,4 +45,5 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "🤖 Auto: Add category via Issue #${{ github.event.issue.number || github.event.inputs.issue_number }}"
-          file_pattern: 'data/*.json public/sitemap.xml .github/ISSUE_TEMPLATE/*.yml'
+          file_pattern: 'data/ public/sitemap.xml .github/ISSUE_TEMPLATE/*.yml'
+

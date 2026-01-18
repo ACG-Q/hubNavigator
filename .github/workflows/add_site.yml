@@ -45,10 +45,10 @@ jobs:
       - name: Aggregate Data
         run: node automation/aggregate.js
 
-      - name: Commit Changes
+      - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "🤖 Auto: Process Site Issue #${{ github.event.issue.number }}"
-          file_pattern: 'data/items/*.json data/site_all.json data/category_all.json public/sitemap.xml'
+          file_pattern: 'data/ public/sitemap.xml'
           skip_fetch: false
           skip_checkout: false
