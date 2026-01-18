@@ -1,0 +1,51 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    /* Default Theme (Light - Blue/Purple) */
+    --color-primary: 99 102 241;
+    /* Indigo-500 */
+    --color-secondary: 168 85 247;
+    /* Purple-500 */
+    --color-surface: 255 255 255;
+    --color-surface-highlight: 243 244 246;
+    --color-background: 249 250 251;
+    --text-primary: 17 24 39;
+    --text-secondary: 75 85 99;
+}
+
+.dark {
+    /* Dark Theme */
+    --color-primary: 129 140 248;
+    /* Indigo-400 */
+    --color-secondary: 192 132 252;
+    /* Purple-400 */
+    --color-surface: 31 41 55;
+    /* Gray-800 */
+    --color-surface-highlight: 55 65 81;
+    /* Gray-700 */
+    --color-background: 17 24 39;
+    /* Gray-900 */
+    --text-primary: 243 244 246;
+    --text-secondary: 156 163 175;
+}
+
+/* Glassmorphism Utilities */
+.glass {
+    background: rgba(var(--color-surface), 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dark .glass {
+    background: rgba(var(--color-surface), 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+body {
+    @apply bg-background text-gray-900 dark:text-gray-100 transition-colors duration-300;
+    color: rgb(var(--text-primary));
+    background-color: rgb(var(--color-background));
+}

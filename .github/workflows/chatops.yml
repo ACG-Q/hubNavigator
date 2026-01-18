@@ -1,0 +1,49 @@
+name: "💬 ChatOps"
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  chatops:
+    if: startsWith(github.event.comment.body, '/') && !github.event.issue.pull_request
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Handle Commands
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          COMMENT_BODY: ${{ github.event.comment.body }}
+          COMMENT_AUTHOR: ${{ github.event.comment.user.login }}
+        run: node automation/chatops.js
+
+      - name: Trigger Data Sync (Optional)
+        if: contains(github.event.comment.body, '/approve') || contains(github.event.comment.body, '/update')
+        run: |
+          echo "Triggering data updates..."
+          # After approval, we might want to run add_site or add_category immediately
+          node automation/add_site.js
+          node automation/add_category.js
+          node automation/aggregate.js
+
+      - name: Commit changes
+        if: contains(github.event.comment.body, '/approve') || contains(github.event.comment.body, '/update')
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "🤖 Auto: ChatOps Update #${{ github.event.issue.number }}"
+          file_pattern: 'data/*.json data/items/*.json public/sitemap.xml'

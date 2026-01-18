@@ -1,0 +1,82 @@
+name: "🔗 提交新站点 (Submit Site)"
+description: "推荐优质网站或工具收录到导航站。"
+title: "[New]: "
+labels: ["triage", "kind:site"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感谢您推荐优质资源！请确保该站点符合收录标准：
+        1. 稳定可访问
+        2. 有实际使用价值
+        3. 无过多广告或恶意弹窗
+
+  - type: input
+    id: name
+    attributes:
+      label: 站点名称 (Name)
+      description: 网站的简短名称，如 "Gemini"
+      placeholder: "Gemini"
+    validations:
+      required: true
+
+  - type: input
+    id: url
+    attributes:
+      label: 链接地址 (URL)
+      description: 必须以 http:// 或 https:// 开头
+      placeholder: "https://gemini.google.com"
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: categories
+    attributes:
+      label: 核心分类 (Categories)
+      description: 请勾选最匹配的一个或多个分类 (Select one or more matching categories)
+      options:
+        - label: ai-chat (AI 对话)
+        - label: ai-writing (AI 写作)
+        - label: ai-audio-video (AI 音视频)
+        - label: ai-drawing (AI 绘画)
+        - label: ai-dev (AI 编程)
+        - label: dev-frontend (前端开发)
+        - label: dev-backend (后端/架构)
+        - label: dev-tools (在线工具)
+        - label: dev-resources (技术资源)
+        - label: web3-crypto (Web3/区块链)
+        - label: design-inspiration (灵感采集)
+        - label: design-assets (设计素材)
+        - label: design-icons (图标字体)
+        - label: design-color (配色排版)
+        - label: design-tools (设计工具)
+        - label: image-tools (图片处理)
+        - label: video-tools (视频工具)
+        - label: audio-tools (音频工具)
+        - label: product-ops (产品运营)
+        - label: marketing-seo (营销/SEO)
+        - label: indie-maker (独立开发)
+        - label: efficiency (效率办公)
+        - label: resource-site (资源下载)
+        - label: read-news (阅读资讯)
+        - label: lifestyle (生活趣味)
+    validations:
+      min_selected: 1
+
+  - type: input
+    id: cover
+    attributes:
+      label: 封面图/Logo (Cover URL)
+      description: "[可选] 请提供高清 Logo 或网站截图的 URL (推荐 16:9 或 1:1)"
+      placeholder: "https://example.com/logo.png"
+    validations:
+      required: false
+
+  - type: textarea
+    id: description
+    attributes:
+      label: 详细介绍 (Description)
+      description: 请简要介绍该站点的核心功能、亮点或使用场景 (支持 Markdown)
+      placeholder: "这是一个非常强大的 AI 对话工具，支持..."
+    validations:
+      required: true

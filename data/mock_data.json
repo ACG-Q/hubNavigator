@@ -1,0 +1,28 @@
+[
+    {
+        "id": "mock-1",
+        "name": "示例站点 1",
+        "url": "https://example.com",
+        "categories": [
+            "ai-chat"
+        ],
+        "cover": "https://via.placeholder.com/300x200",
+        "description": "这是一个模拟数据，用于开发环境演示。",
+        "status": "active",
+        "added_at": "2026-01-18",
+        "last_check": "2026-01-18 12:00"
+    },
+    {
+        "id": "mock-2",
+        "name": "Example Site 2",
+        "url": "https://google.com",
+        "categories": [
+            "dev-tools"
+        ],
+        "cover": "https://via.placeholder.com/300x200",
+        "description": "Mock data for testing purposes.",
+        "status": "active",
+        "added_at": "2026-01-18",
+        "last_check": "2026-01-18 12:00"
+    }
+]

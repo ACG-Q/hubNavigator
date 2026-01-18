@@ -1,0 +1,6 @@
+.shared
+.agent
+.gemini
+dist
+node_modules
+design_doc_*.md

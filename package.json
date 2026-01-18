@@ -1,0 +1,36 @@
+{
+    "name": "hub-navigator",
+    "version": "1.0.0",
+    "description": "Automated Navigation Station",
+    "main": "scripts/parser.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "parser": "node scripts/parser.js",
+        "dev": "vite",
+        "dev:mock": "cross-env VITE_MOCK=true vite",
+        "build": "vite build",
+        "ssg": "node scripts/ssg_generator.js",
+        "backup": "bash scripts/backup_data.sh",
+        "preview": "vite preview"
+    },
+    "dependencies": {
+        "@octokit/rest": "^22.0.1",
+        "core-js": "^3.47.0",
+        "fuse.js": "^7.1.0",
+        "gray-matter": "^4.0.3",
+        "js-yaml": "^4.1.1",
+        "marked": "^17.0.1",
+        "vue-i18n": "^9.14.4",
+        "vue-router": "^4.6.4"
+    },
+    "devDependencies": {
+        "@vitejs/plugin-vue": "^6.0.3",
+        "autoprefixer": "^10.4.16",
+        "cross-env": "^10.1.0",
+        "postcss": "^8.4.31",
+        "tailwindcss": "^3.4.1",
+        "vite": "^7.3.1",
+        "vue": "^3.5.26"
+    },
+    "private": true
+}

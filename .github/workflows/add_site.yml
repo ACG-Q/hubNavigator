@@ -1,0 +1,60 @@
+name: 📝 Issue Parser
+
+# 触发条件：Issue 创建或编辑时运行
+# 注意：parser 会更新 Issue body，但通过条件判断避免循环触发
+on:
+  issues:
+    types: [opened, edited, reopened, closed]
+
+# 并发控制：同一 Issue 同时只能有一个 parser 运行
+concurrency:
+  group: issue-parser-${{ github.event.issue.number }}
+  cancel-in-progress: true
+
+jobs:
+  parse:
+    # 过滤器：
+    # 1. 仅处理带有特定标签的 Issue
+    # 2. 跳过已经包含 Front Matter 的 Issue（避免循环触发）
+    if: contains(github.event.issue.labels.*.name, 'kind:site') || contains(github.event.issue.labels.*.name, 'kind:domain-migration') || contains(github.event.issue.labels.*.name, 'kind:correction')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Pull Latest Changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git pull origin master --rebase
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Process Site Issue
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          ISSUE_STATE: ${{ github.event.issue.state }}
+        run: node automation/add_site.js
+
+      - name: Aggregate Data
+        run: node automation/aggregate.js
+
+      - name: Commit Changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "🤖 Auto: Process Site Issue #${{ github.event.issue.number }}"
+          file_pattern: 'data/items/*.json data/site_all.json data/category_all.json public/sitemap.xml'
+          skip_fetch: false
+          skip_checkout: false

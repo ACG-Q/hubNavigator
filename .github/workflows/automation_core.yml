@@ -1,0 +1,43 @@
+name: "⚙️ Automation Core"
+
+on:
+  schedule:
+    - cron: '*/30 * * * *'  # Every 30 minutes
+  workflow_dispatch:
+  push:
+    paths:
+      - 'data/items/**.json'
+      - 'automation/**'
+
+jobs:
+  automation:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: 🏥 Health Check
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: node automation/health.js
+
+      - name: � Aggregate Data
+        run: node automation/aggregate.js
+
+      - name: 🚀 Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "🤖 Auto: Data consistency & Health sync"
+          file_pattern: 'data/items/*.json data/*.json public/sitemap.xml'

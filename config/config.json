@@ -1,0 +1,18 @@
+{
+    "repo": "ACG-Q/hubNavigator",
+    "siteUrl": "https://acg-q.github.io/HubNavigator",
+    "startTime": "2026-01-09",
+    "siteName": "HubNavigator",
+    "siteDescription": "自动化 AI 驱动的导航站系统",
+    "siteKeywords": "AI, 导航站, 自动化, 开发者工具",
+    "siteIcon": "https://icon.horse/icon/github.com",
+    "siteLogo": "H",
+    "siteBeian": "",
+    "analyticsCode": "",
+    "defaultLocale": "zh",
+    "giscus": {
+        "repoId": "R_kgDOQ3PSYQ",
+        "categoryId": "DIC_kwDOQ3PSYc4C0yx5",
+        "category": "Announcements"
+    }
+}

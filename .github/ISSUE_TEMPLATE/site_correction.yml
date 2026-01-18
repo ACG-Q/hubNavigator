@@ -1,0 +1,66 @@
+name: "🛠️ 报错/修正 (Site Correction)"
+description: "发现站点信息有误、链接失效或需要更新介绍？"
+title: "[Correction]: "
+labels: ["kind:correction", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感谢您帮助我们完善导航站！请详细描述需要修正的内容。
+
+  - type: input
+    id: name
+    attributes:
+      label: 站点 ID 或名称 (Site ID or Name)
+      description: 推荐填写站点 ID (如 123)，可在站点详情页地址栏或 GitHub 链接中找到。 (Recommended Provide the Site ID from the URL or GitHub link)
+      placeholder: "123"
+    validations:
+      required: true
+
+  - type: input
+    id: url
+    attributes:
+      label: 链接地址 (URL)
+      description: 如果链接失效，请在此处填写正确的链接
+      placeholder: "https://new-link.com"
+
+  - type: checkboxes
+    id: categories
+    attributes:
+      label: 核心分类 (Categories)
+      description: 如果分类不准确，请在此处选择正确的分类 (Select one or more matching categories)
+      options:
+        - label: ai-chat (AI 对话)
+        - label: ai-writing (AI 写作)
+        - label: ai-audio-video (AI 音视频)
+        - label: ai-drawing (AI 绘画)
+        - label: ai-dev (AI 编程)
+        - label: dev-frontend (前端开发)
+        - label: dev-backend (后端/架构)
+        - label: dev-tools (在线工具)
+        - label: dev-resources (技术资源)
+        - label: web3-crypto (Web3/区块链)
+        - label: design-inspiration (灵感采集)
+        - label: design-assets (设计素材)
+        - label: design-icons (图标字体)
+        - label: design-color (配色排版)
+        - label: design-tools (设计工具)
+        - label: image-tools (图片处理)
+        - label: video-tools (视频工具)
+        - label: audio-tools (音频工具)
+        - label: product-ops (产品运营)
+        - label: marketing-seo (营销/SEO)
+        - label: indie-maker (独立开发)
+        - label: efficiency (效率办公)
+        - label: resource-site (资源下载)
+        - label: read-news (阅读资讯)
+        - label: lifestyle (生活趣味)
+
+  - type: textarea
+    id: description
+    attributes:
+      label: 修正说明 (Description)
+      description: 请详细描述需要更新的信息（如简介、封面图等）
+      placeholder: "官方已更新 Logo，新的 URL 是... 另外简介建议修改为..."
+    validations:
+      required: true
