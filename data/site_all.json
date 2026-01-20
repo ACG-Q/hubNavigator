@@ -1,1 +1,21 @@
-[]
+[
+  {
+    "id": "2",
+    "name": "测试2",
+    "url": "https://translate.google.com/",
+    "categories": [
+      "ai-drawing",
+      "dev-frontend",
+      "dev-resources",
+      "web3-crypto",
+      "design-color",
+      "video-tools"
+    ],
+    "cover": "",
+    "description": "test2",
+    "status": "active",
+    "added_at": "2026-01-20",
+    "last_check": "2026-01-20 13:40",
+    "fail_count": 0
+  }
+]
