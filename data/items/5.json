@@ -1,0 +1,28 @@
+{
+  "id": "5",
+  "url": "https://translate.google.com/",
+  "categories": [
+    "ai-chat",
+    "ai-writing",
+    "ai-audio-video",
+    "ai-drawing",
+    "ai-dev",
+    "dev-frontend",
+    "dev-backend",
+    "dev-tools",
+    "dev-resources",
+    "web3-crypto",
+    "image-tools",
+    "video-tools",
+    "audio-tools",
+    "product-ops",
+    "marketing-seo",
+    "indie-maker",
+    "efficiency"
+  ],
+  "cover": "",
+  "description": "测试更正",
+  "status": "triage",
+  "added_at": "2026-01-20",
+  "last_check": "2026-01-20 12:00"
+}
