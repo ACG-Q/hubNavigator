@@ -12,6 +12,7 @@ async function processSiteIssue(issueOrNumber, issueState = 'open') {
         const issue = typeof issueOrNumber === 'object' ? issueOrNumber : await GitHubAPI.getIssue(issueOrNumber);
         const issueNumber = issue.number;
         const labels = issue.labels.map(l => l.name);
+        Logger.info(`Processing #${issueNumber} with labels: ${labels.join(', ')}`);
 
         // Filter
         const isSite = labels.includes(LABELS.KIND_SITE);
@@ -39,15 +40,6 @@ async function processSiteIssue(issueOrNumber, issueState = 'open') {
 
         Logger.info(`Form Data: ${JSON.stringify(formData)}`)
 
-        // Triage Gate
-        if (status === LABELS.TRIAGE) {
-            if (fs.existsSync(filePath)) {
-                fs.unlinkSync(filePath);
-                Logger.info(`Removed triage data for #${issueNumber}`);
-            }
-            return { success: true, action: "REMOVED_TRIAGE", status };
-        }
-
         // Map Data
         const siteData = {
             id: String(issueNumber),
@@ -63,6 +55,7 @@ async function processSiteIssue(issueOrNumber, issueState = 'open') {
 
         // Save
         if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
+        Logger.info(`Writing JSON to: ${filePath}`);
         fs.writeFileSync(filePath, JSON.stringify(siteData, null, 2));
         Logger.success(`Saved site data for #${issueNumber}`);
         return { success: true, action: "SAVED", status, data: siteData };

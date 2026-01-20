@@ -114,6 +114,10 @@ async function approveSite(issue) {
     if (!newLabels.includes(LABELS.STATUS_ACTIVE)) newLabels.push(LABELS.STATUS_ACTIVE);
 
     await GitHubAPI.updateIssue(issue.number, { labels: newLabels });
+
+    // IMPORTANT: Update local issue labels to reflect the changes for downstream processing
+    issue.labels = newLabels.map(name => ({ name }));
+
     await processSiteIssue(issue); // 直接注入对象，解决竞争条件
 
     await notifyUser(issue.number, "✅ **站点申请已批准** | Site submission approved.", "状态已变更为 `active` | Status changed to `active`.");
