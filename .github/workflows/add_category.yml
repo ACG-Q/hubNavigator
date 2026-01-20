@@ -12,7 +12,9 @@ on:
 jobs:
   add-category:
     if: |
-      contains(github.event.issue.labels.*.name, 'kind:new-category') || 
+    if: |
+      contains(github.event.issue.labels.*.name, 'kind:category') || 
+      contains(github.event.issue.labels.*.name, 'category:delete') ||
       github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     permissions:
@@ -37,9 +39,6 @@ jobs:
           ISSUE_NUMBER: ${{ github.event.issue.number || github.event.inputs.issue_number }}
           ISSUE_STATE: ${{ github.event.issue.state || 'open' }}
         run: node automation/add_category.js
-
-      - name: Aggregate Data
-        run: node automation/aggregate.js
 
       - name: Commit & Push Changes
         uses: stefanzweifel/git-auto-commit-action@v5

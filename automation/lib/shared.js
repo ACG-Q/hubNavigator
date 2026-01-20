@@ -2,6 +2,8 @@
  * Form Label to JSON Key mapping
  * Ensures English keys even if issue templates use Chinese labels
  */
+const { LABELS } = require('./constants');
+
 const FIELD_MAP = {
     "站点名称": "site_name",
     "站点名称 (Name)": "site_name",

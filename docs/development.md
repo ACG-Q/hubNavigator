@@ -12,16 +12,16 @@ HubNavigator 采用 **"Issue 即数据库"** 的理念。
 graph LR
     User[用户] -->|提交 Issue| Issue[GitHub Issues]
     Actions[GitHub Actions] -->|读取| Issue
-    Actions -->|Parser.js| JSON[data/items/*.json]
-    JSON -->|Build.js| SiteData[site_all.json]
+    Actions -->|automation/init.js| JSON[data/items/*.json]
+    JSON -->|automation/aggregate.js| SiteData[site_all.json]
     SiteData -->|Vite Build| Dist[Static Site]
     Dist -->|Deploy| Pages[GitHub Pages]
 ```
 
 1.  **数据源**：GitHub Issues。
-2.  **解析层**：`parser.js` 将 Issue 表单解析为标准的 JSON。
-3.  **处理层**：`health_check.py` 巡检站点，`comment_ops.py` 处理 ChatOps 命令。
-4.  **构建层**：`build_site_all.js` 聚合数据，Vite 构建前端。
+2.  **解析层**：`automation/init.js` 将 Issue 表单解析为标准的 JSON。
+3.  **处理层**：`automation/health.js` 巡检站点，`automation/chatops.js` 处理 ChatOps 命令。
+4.  **构建层**：`automation/aggregate.js` 聚合数据，Vite 构建前端。
 5.  **展示层**：Vue 3 + TailwindCSS 的响应式页面。
 
 ---
@@ -41,7 +41,8 @@ cd hubNavigator
 npm install
 
 # 后端脚本依赖
-pip install -r requirements.txt
+# 无需 pip，全部使用 npm install
+npm install
 ```
 
 ---
@@ -67,42 +68,48 @@ npm run dev
 
 | 脚本路径 (Path) | 功能描述 (Description) |
 | :--- | :--- |
-| `automation/core/issue_router.js` | **核心路由**: 根据标签分发解析任务（入口） |
-| `automation/parsers/site_parser.js` | **站点解析**: 处理提交、修正、迁移，管理 JSON 生命周期 |
-| `automation/parsers/category_parser.js` | **分类解析**: 处理新增分类申请并同步配置 |
-| `automation/core/ops_handler.js` | **指令处理**: 实现 ChatOps（如 `/approve`, `/update`） |
-| `automation/core/health_checker.js` | **健康检查**: 定时巡检站点链接有效性，自动同步标签 |
-| `automation/core/data_aggregator.js` | **数据聚合**: 汇总 JSON，生成 `site_all.json` 与 Sitemap |
-| `automation/utils/init_labels.js` | **标签定义**: 统一维护 GitHub 仓库的标签体系 |
+| `automation/init.js` | **核心路由**: 根据标签分发解析任务（入口） |
+| `automation/parsers/site.js` | **站点解析**: 处理提交、修正、迁移，管理 JSON 生命周期 |
+| `automation/parsers/category.js` | **分类解析**: 处理新增分类申请并同步配置 |
+| `automation/chatops.js` | **指令处理**: 实现 ChatOps（如 `/approve`, `/update`） |
+| `automation/health.js` | **健康检查**: 定时巡检站点链接有效性，自动同步标签 |
+| `automation/aggregate.js` | **数据聚合**: 汇总 JSON，生成 `site_all.json` 与 Sitemap |
+| `automation/labels.js` | **标签定义**: 统一维护 GitHub 仓库的标签体系 |
+
+---
+
+## 🚀 手动触发 GitHub Actions
+
+在某些情况下，你可能需要手动触发 GitHub Actions 工作流，例如：
+1.  强制重新聚合数据。
+2.  重新运行健康检查。
+3.  在本地调试后，希望在 CI/CD 环境中验证。
+
+**操作步骤：**
+1.  进入 GitHub 仓库的 `Actions` 页面。
+2.  在左侧导航栏中，选择你想要触发的工作流（例如 `Build Site Data` 或 `Health Check`）。
+3.  点击右侧的 **Run workflow** 按钮。
+4.  等待运行成功（显示绿色勾号）。
 
 ---
 
 ## 🧪 本地调试工作流
 
-### 1. 模拟 Parser 解析
-如果你修改了 `parser.js`，可以使用以下指令本地模拟 Actions 环境：
+### 1. 模拟自动化运行
+如果你修改了自动化逻辑，可以使用以下方式本地测试：
 
 ```bash
-# 设置模拟负载
-export ISSUE_NUMBER="10"
-export ISSUE_BODY="...粘贴 Issue 的 Markdown 内容..."
-export ISSUE_LABELS="kind:site,triage"
-export ISSUE_STATE="open"
-export GITHUB_TOKEN="your_personal_access_token" # 选填
+# 设置环境变量 (可选)
+export GITHUB_TOKEN="your_token"
 
-node scripts/parser.js
-```
+# 运行初始化 (解析 Issue)
+node automation/init.js
 
-### 2. 模拟巡检逻辑
-```bash
-# 巡检脚本会自动读取 data/items/ 下的所有 JSON 文件
-python scripts/health_check.py
-```
+# 运行健康检查
+node automation/health.js
 
-### 3. 本地构建完整数据
-```bash
-# 在 data/items/ 修改完数据后，运行此脚本更新 index
-node scripts/build_site_all.js
+# 运行数据聚合
+node automation/aggregate.js
 ```
 
 ---
@@ -110,9 +117,9 @@ node scripts/build_site_all.js
 ## 🚀 进阶任务
 
 ### 如何添加一个新分类？
-1. 修改 `config/categories.yaml`，添加新的分类条目。
-2. 运行 `node scripts/build_site_all.js` 以更新 `data/categories.json`。
-3. (可选) 手动运行 `node scripts/add_category.js` 来同步更新 Issue 模板的 checkboxes。
+1. 管理员通过 Issue 提交分类申请。
+2. 在 Issue 下评论 `/approve`。
+3. 系统会自动更新配置并同步 Issue 模板。
 
 ### 如何修改 Issue 模板？
 1. 修改 `.github/ISSUE_TEMPLATE/` 下的 `.yml` 文件。

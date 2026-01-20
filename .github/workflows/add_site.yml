@@ -10,7 +10,7 @@ concurrency:
 
 jobs:
   parse:
-    if: contains(github.event.issue.labels.*.name, 'kind:site') || contains(github.event.issue.labels.*.name, 'kind:domain-migration') || contains(github.event.issue.labels.*.name, 'kind:correction')
+    if: contains(github.event.issue.labels.*.name, 'kind:site') || contains(github.event.issue.labels.*.name, 'site:correction')
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -41,9 +41,6 @@ jobs:
           ISSUE_NUMBER: ${{ github.event.issue.number }}
           ISSUE_STATE: ${{ github.event.issue.state }}
         run: node automation/add_site.js
-
-      - name: Aggregate Data
-        run: node automation/aggregate.js
 
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v5

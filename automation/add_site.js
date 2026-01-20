@@ -3,30 +3,23 @@ const path = require('path');
 const GitHubAPI = require('./lib/github');
 const Logger = require('./lib/logger');
 const Shared = require('./lib/shared');
+const { LABELS } = require('./lib/constants');
 
 const DATA_DIR = path.join(__dirname, '../data/items');
 
-async function main() {
-    const issueNumber = process.env.ISSUE_NUMBER;
-    const issueState = process.env.ISSUE_STATE?.toLowerCase() || 'open';
-
-    if (!issueNumber) {
-        Logger.error("ISSUE_NUMBER is required.");
-        process.exit(1);
-    }
-
+async function processSiteIssue(issueOrNumber, issueState = 'open') {
     try {
-        const issue = await GitHubAPI.getIssue(issueNumber);
+        const issue = typeof issueOrNumber === 'object' ? issueOrNumber : await GitHubAPI.getIssue(issueOrNumber);
+        const issueNumber = issue.number;
         const labels = issue.labels.map(l => l.name);
 
-        // Filter: kind:site, kind:correction, kind:domain-migration
-        const isSite = labels.includes('kind:site');
-        const isCorrection = labels.includes('kind:correction');
-        const isMigration = labels.includes('kind:domain-migration');
+        // Filter
+        const isSite = labels.includes(LABELS.KIND_SITE);
+        const isUpdate = labels.includes(LABELS.OP_SITE_UPDATE);
 
-        if (!isSite && !isCorrection && !isMigration) {
+        if (!isSite && !isUpdate) {
             Logger.info("Not a site-related issue. Skipping.");
-            return;
+            return { skipped: true, reason: "NOT_SITE_ISSUE" };
         }
 
         const filePath = path.join(DATA_DIR, `${issueNumber}.json`);
@@ -37,7 +30,7 @@ async function main() {
                 fs.unlinkSync(filePath);
                 Logger.success(`Deleted data for closed issue #${issueNumber}`);
             }
-            return;
+            return { success: true, action: "DELETED" };
         }
 
         // Parse Form
@@ -45,13 +38,12 @@ async function main() {
         const status = determineStatus(labels);
 
         // Triage Gate
-        if (status === 'triage') {
+        if (status === LABELS.TRIAGE) {
             if (fs.existsSync(filePath)) {
                 fs.unlinkSync(filePath);
                 Logger.info(`Removed triage data for #${issueNumber}`);
             }
-            // We no longer write back to the issue body (no front-matter sync)
-            return;
+            return { success: true, action: "REMOVED_TRIAGE", status };
         }
 
         // Map Data
@@ -71,21 +63,36 @@ async function main() {
         if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
         fs.writeFileSync(filePath, JSON.stringify(siteData, null, 2));
         Logger.success(`Saved site data for #${issueNumber}`);
+        return { success: true, action: "SAVED", status, data: siteData };
 
     } catch (err) {
         Logger.error("Failed to process site issue", err);
+        throw err;
     }
 }
 
 function determineStatus(labels) {
-    if (labels.includes('triage')) return 'triage';
-    if (labels.includes('status:active')) return 'active';
-    if (labels.includes('status:warning')) return 'warning';
-    if (labels.includes('status:broken')) return 'broken';
-    if (labels.includes('status:duplicate')) return 'duplicate';
+    if (labels.includes(LABELS.TRIAGE)) return 'triage';
+    if (labels.includes(LABELS.STATUS_ACTIVE)) return 'active';
+    if (labels.includes(LABELS.STATUS_WARNING)) return 'warning';
+    if (labels.includes(LABELS.STATUS_BROKEN)) return 'broken';
+    if (labels.includes(LABELS.STATUS_DUPLICATE)) return 'duplicate';
     return 'triage';
+}
+
+async function main() {
+    const issueNumber = process.env.ISSUE_NUMBER;
+    const issueState = process.env.ISSUE_STATE?.toLowerCase() || 'open';
+
+    if (!issueNumber) {
+        Logger.error("ISSUE_NUMBER is required.");
+        return;
+    }
+    await processSiteIssue(issueNumber, issueState);
 }
 
 if (require.main === module) {
     main();
 }
+
+module.exports = { processSiteIssue, determineStatus };

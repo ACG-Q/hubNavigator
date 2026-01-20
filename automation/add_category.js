@@ -3,25 +3,24 @@ const path = require('path');
 const GitHubAPI = require('./lib/github');
 const Logger = require('./lib/logger');
 const Shared = require('./lib/shared');
+const { LABELS } = require('./lib/constants');
 
 const CATEGORY_ITEMS_DIR = path.join(__dirname, '../data/category_items');
 
-async function main() {
-    const issueNumber = process.env.ISSUE_NUMBER;
-    const issueState = process.env.ISSUE_STATE?.toLowerCase() || 'open';
-
-    if (!issueNumber) {
-        Logger.error("ISSUE_NUMBER is required.");
-        process.exit(1);
-    }
-
+async function processCategoryIssue(issueOrNumber, issueState = 'open') {
     try {
-        const issue = await GitHubAPI.getIssue(issueNumber);
+        const issue = typeof issueOrNumber === 'object' ? issueOrNumber : await GitHubAPI.getIssue(issueOrNumber);
+        const issueNumber = issue.number;
         const labels = issue.labels.map(l => l.name);
 
-        if (!labels.includes('kind:new-category')) {
+        if (!labels.includes(LABELS.KIND_CATEGORY) && !labels.includes(LABELS.OP_CATEGORY_DELETE)) {
             Logger.info("Not a category issue. Skipping.");
-            return;
+            return { skipped: true, reason: "NOT_CATEGORY_ISSUE" };
+        }
+
+        if (labels.includes(LABELS.OP_CATEGORY_DELETE) && issueState === 'open') {
+            Logger.info("Category deletion issue. Skipping standard save.");
+            return { skipped: true, reason: "DELETION_ISSUE" };
         }
 
         const filePath = path.join(CATEGORY_ITEMS_DIR, `${issueNumber}.json`);
@@ -32,16 +31,16 @@ async function main() {
                 fs.unlinkSync(filePath);
                 Logger.success(`Deleted category data for closed issue #${issueNumber}`);
             }
-            return;
+            return { success: true, action: "DELETED" };
         }
 
-        const status = labels.includes('triage') ? 'triage' : 'active';
+        const status = labels.includes(LABELS.TRIAGE) ? 'triage' : 'active';
         if (status === 'triage') {
             if (fs.existsSync(filePath)) {
                 fs.unlinkSync(filePath);
                 Logger.info(`Removed triage category data for #${issueNumber}`);
             }
-            return;
+            return { success: true, action: "REMOVED_TRIAGE", status };
         }
 
         const formData = Shared.parseForm(issue.body);
@@ -49,7 +48,7 @@ async function main() {
 
         if (!categoryId) {
             Logger.error("Category ID not found in issue form.");
-            return;
+            return { success: false, reason: "MISSING_CAT_ID" };
         }
 
         const newCategory = {
@@ -65,12 +64,27 @@ async function main() {
         if (!fs.existsSync(CATEGORY_ITEMS_DIR)) fs.mkdirSync(CATEGORY_ITEMS_DIR, { recursive: true });
         fs.writeFileSync(filePath, JSON.stringify(newCategory, null, 2));
         Logger.success(`Saved category data for #${issueNumber}`);
+        return { success: true, action: "SAVED", status, data: newCategory };
 
     } catch (err) {
         Logger.error("Failed to process category issue", err);
+        throw err;
     }
+}
+
+async function main() {
+    const issueNumber = process.env.ISSUE_NUMBER;
+    const issueState = process.env.ISSUE_STATE?.toLowerCase() || 'open';
+
+    if (!issueNumber) {
+        Logger.error("ISSUE_NUMBER is required.");
+        return;
+    }
+    await processCategoryIssue(issueNumber, issueState);
 }
 
 if (require.main === module) {
     main();
 }
+
+module.exports = { processCategoryIssue };

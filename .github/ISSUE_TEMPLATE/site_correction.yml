@@ -1,7 +1,7 @@
 name: "🛠️ 报错/修正 (Site Correction)"
 description: "发现站点信息有误、链接失效或需要更新介绍？"
 title: "[Correction]: "
-labels: ["kind:correction", "triage"]
+labels: ["site:correction", "triage"]
 body:
   - type: markdown
     attributes:

@@ -72,7 +72,7 @@ const GlobalConfig = {
 首次部署建议手动运行一次初始化工作流，以创建必要的标签。
 
 1. 点击 **Actions** 选项卡。
-2. 在左侧选择 **🔧 Project Initialization (Labels)** 工作流。
+2. 在左侧选择 **System Initialization** 工作流。
 3. 点击右侧的 **Run workflow** 按钮。
 4. 等待运行成功（显示绿色勾号）。
 

@@ -1,7 +1,7 @@
 name: "📂 新增分类申请 (New Category Request)"
 description: "向 HubNavigator 提议新增一个网站分类 (Propose a new category)"
 title: "[Category] "
-labels: ["kind:new-category", "triage"]
+labels: ["kind:category", "triage"]
 body:
   - type: markdown
     attributes:

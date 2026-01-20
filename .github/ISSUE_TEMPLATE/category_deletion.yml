@@ -1,0 +1,25 @@
+name: "🗑️ 删除分类申请 (Delete Category Request)"
+description: "向 HubNavigator 提议删除一个现有分类 (Propose to delete a category)"
+title: "[Delete Category] "
+labels: ["category:delete", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        提议删除一个现有的分类。删除操作是不可逆的，请谨慎操作。
+        Propose to delete an existing category. Deletion is irreversible, please act with caution.
+  - type: input
+    id: category_id
+    attributes:
+      label: "分类 ID (Category ID)"
+      description: "要删除的分类 ID，可在 data/category_items/ 中找到。 (The ID of the category to delete)"
+      placeholder: "e.g. design-assets"
+    validations:
+      required: true
+  - type: textarea
+    id: reason
+    attributes:
+      label: "删除原因 (Reason for Deletion)"
+      placeholder: "例如：该分类已无实际用途，或与其他分类重合。"
+    validations:
+      required: true
