@@ -1,18 +1,18 @@
 {
-  "id": "2",
-  "name": "测试2",
-  "url": "https://translate.google.com/",
+  "id": "4",
+  "name": "测试4",
+  "url": "https://gemini.google.com/app",
   "categories": [
     "ai-drawing",
     "dev-frontend",
+    "dev-tools",
     "dev-resources",
     "web3-crypto",
-    "design-color",
-    "video-tools"
+    "design-assets"
   ],
   "cover": "",
-  "description": "test2",
-  "status": "active",
+  "description": "测试4",
+  "status": "triage",
   "added_at": "2026-01-20",
   "last_check": "2026-01-20 14:23",
   "fail_count": 0
