@@ -6,7 +6,7 @@ import { marked } from 'marked'
 import GlobalConfig from '../config'
 import realSitesData from '../../data/site_all.json'
 import mockSitesData from '../../data/mock_data.json'
-import categoriesData from '../../data/categories.json'
+import categoriesData from '../../data/category_all.json'
 
 const { t, locale } = useI18n()
 const sitesData = import.meta.env.VITE_MOCK ? mockSitesData : realSitesData
