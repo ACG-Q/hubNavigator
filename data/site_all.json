@@ -15,7 +15,26 @@
     "description": "test2",
     "status": "active",
     "added_at": "2026-01-20",
-    "last_check": "2026-01-20 14:23",
+    "last_check": "2026-01-20 14:55",
+    "fail_count": 0
+  },
+  {
+    "id": "4",
+    "name": "测试4",
+    "url": "https://gemini.google.com/app",
+    "categories": [
+      "ai-drawing",
+      "dev-frontend",
+      "dev-tools",
+      "dev-resources",
+      "web3-crypto",
+      "design-assets"
+    ],
+    "cover": "",
+    "description": "测试4",
+    "status": "active",
+    "added_at": "2026-01-20",
+    "last_check": "2026-01-20 14:55",
     "fail_count": 0
   }
 ]
