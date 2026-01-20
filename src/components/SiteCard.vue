@@ -1,7 +1,7 @@
 <script setup>
 import { useI18n } from 'vue-i18n'
 import { computed } from 'vue'
-import categoriesData from '../../data/categories.json'
+import categoriesData from '../../data/category_all.json'
 
 const { locale } = useI18n()
 const props = defineProps({
