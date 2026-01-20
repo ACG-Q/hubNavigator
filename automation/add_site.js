@@ -37,6 +37,8 @@ async function processSiteIssue(issueOrNumber, issueState = 'open') {
         const formData = Shared.parseForm(issue.body);
         const status = determineStatus(labels);
 
+        Logger.info(`Form Data: ${JSON.stringify(formData)}`)
+
         // Triage Gate
         if (status === LABELS.TRIAGE) {
             if (fs.existsSync(filePath)) {

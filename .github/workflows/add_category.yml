@@ -12,7 +12,6 @@ on:
 jobs:
   add-category:
     if: |
-    if: |
       contains(github.event.issue.labels.*.name, 'kind:category') || 
       contains(github.event.issue.labels.*.name, 'category:delete') ||
       github.event_name == 'workflow_dispatch'
@@ -45,4 +44,3 @@ jobs:
         with:
           commit_message: "🤖 Auto: Add category via Issue #${{ github.event.issue.number || github.event.inputs.issue_number }}"
           file_pattern: 'data/ public/sitemap.xml .github/ISSUE_TEMPLATE/*.yml'
-
