@@ -115,7 +115,6 @@ async function approveSite(issue) {
 
     await GitHubAPI.updateIssue(issue.number, { labels: newLabels });
 
-    // IMPORTANT: Update local issue labels to reflect the changes for downstream processing
     issue.labels = newLabels.map(name => ({ name }));
 
     await processSiteIssue(issue); // 直接注入对象，解决竞争条件
@@ -132,6 +131,9 @@ async function approveCategory(issue) {
     if (!newLabels.includes(LABELS.STATUS_ACTIVE)) newLabels.push(LABELS.STATUS_ACTIVE);
 
     await GitHubAPI.updateIssue(issue.number, { labels: newLabels, state: 'closed' });
+
+    issue.labels = newLabels.map(name => ({ name }));
+
     await processCategoryIssue(issue);
 
     await notifyUser(issue.number, "✅ **分类申请已批准并关闭** | Category proposal approved and closed.", "该分类现在已生效 | This category is now active.");

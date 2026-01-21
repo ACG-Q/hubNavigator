@@ -12,6 +12,7 @@ async function processCategoryIssue(issueOrNumber, issueState = 'open') {
         const issue = typeof issueOrNumber === 'object' ? issueOrNumber : await GitHubAPI.getIssue(issueOrNumber);
         const issueNumber = issue.number;
         const labels = issue.labels.map(l => l.name);
+        Logger.info(`Processing Category #${issueNumber} with labels: ${labels.join(', ')}`);
 
         if (!labels.includes(LABELS.KIND_CATEGORY) && !labels.includes(LABELS.OP_CATEGORY_DELETE)) {
             Logger.info("Not a category issue. Skipping.");
@@ -35,15 +36,9 @@ async function processCategoryIssue(issueOrNumber, issueState = 'open') {
         }
 
         const status = labels.includes(LABELS.TRIAGE) ? 'triage' : 'active';
-        if (status === 'triage') {
-            if (fs.existsSync(filePath)) {
-                fs.unlinkSync(filePath);
-                Logger.info(`Removed triage category data for #${issueNumber}`);
-            }
-            return { success: true, action: "REMOVED_TRIAGE", status };
-        }
 
         const formData = Shared.parseForm(issue.body);
+        Logger.info(`Category Form Data: ${JSON.stringify(formData)}`);
         const categoryId = formData.category_id || formData.id;
 
         if (!categoryId) {
@@ -62,6 +57,7 @@ async function processCategoryIssue(issueOrNumber, issueState = 'open') {
         };
 
         if (!fs.existsSync(CATEGORY_ITEMS_DIR)) fs.mkdirSync(CATEGORY_ITEMS_DIR, { recursive: true });
+        Logger.info(`Writing Category JSON to: ${filePath}`);
         fs.writeFileSync(filePath, JSON.stringify(newCategory, null, 2));
         Logger.success(`Saved category data for #${issueNumber}`);
         return { success: true, action: "SAVED", status, data: newCategory };
