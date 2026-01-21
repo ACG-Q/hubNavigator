@@ -1,0 +1,21 @@
+{
+  "id": "6",
+  "url": "https://translate.google.com/",
+  "categories": [
+    "ai-chat",
+    "ai-audio-video",
+    "ai-drawing",
+    "ai-dev",
+    "dev-frontend",
+    "dev-backend",
+    "dev-tools",
+    "dev-resources",
+    "design-inspiration",
+    "design-icons"
+  ],
+  "cover": "",
+  "description": "测试更正2",
+  "status": "triage",
+  "added_at": "2026-01-21",
+  "last_check": "2026-01-21 12:00"
+}
