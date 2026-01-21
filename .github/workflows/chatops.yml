@@ -1,4 +1,4 @@
-name: ChatOps
+name: 💬 ChatOps
 
 on:
   issue_comment:

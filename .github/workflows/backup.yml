@@ -1,4 +1,4 @@
-name: Weekly Data Backup
+name: 💾 Weekly Data Backup
 
 on:
   schedule:
