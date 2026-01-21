@@ -22,7 +22,8 @@ async function main() {
 
     try {
         // 1. 安全校验 | Permission Check
-        if (env.author !== env.repoOwner) {
+        const admins = getAdmins();
+        if (!admins.includes(env.author)) {
             Logger.warn(`Unauthorized command attempt by ${env.author}`);
             return;
         }
@@ -43,6 +44,9 @@ async function main() {
                 break;
             case COMMANDS.CLOSE:
                 await handleCloseAction(issue, args);
+                break;
+            case COMMANDS.RESTORE:
+                await handleRestoreAction(issue);
                 break;
             default:
                 Logger.warn(`Unknown command: ${command}`);
@@ -263,6 +267,27 @@ async function handleCloseAction(issue, args) {
 }
 
 /**
+ * 手动恢复为活跃状态 | Manual Restore to Active
+ */
+async function handleRestoreAction(issue) {
+    const labels = issue.labels.map(l => l.name);
+    const newLabels = labels.filter(l => ![LABELS.STATUS_BROKEN, LABELS.STATUS_WARNING, LABELS.TRIAGE].includes(l));
+    if (!newLabels.includes(LABELS.STATUS_ACTIVE)) newLabels.push(LABELS.STATUS_ACTIVE);
+
+    await GitHubAPI.updateIssue(issue.number, { labels: newLabels });
+
+    issue.labels = newLabels.map(name => ({ name }));
+
+    if (labels.includes(LABELS.KIND_CATEGORY)) {
+        await processCategoryIssue(issue);
+    } else {
+        await processSiteIssue(issue);
+    }
+
+    await notifyUser(issue.number, "✅ **状态已手动恢复** | Status manually restored.", "状态已变更为 `active` | Status changed to `active`.");
+}
+
+/**
  * --- 辅助工具 (Utilities) ---
  */
 
@@ -294,9 +319,21 @@ function performDataSync(target, source) {
     return { changed, data: target };
 }
 
-async function notifyUser(issueNumber, title, detail = "") {
+function notifyUser(issueNumber, title, detail = "") {
     const msg = `${title}${detail ? `\n${detail}` : ""}`;
-    await GitHubAPI.createComment(issueNumber, msg);
+    return GitHubAPI.createComment(issueNumber, msg);
+}
+
+function getAdmins() {
+    const owner = process.env.GITHUB_REPOSITORY.split('/')[0];
+    try {
+        const config = JSON.parse(fs.readFileSync(path.join(__dirname, '../config/config.json'), 'utf8'));
+        const extraAdmins = Array.isArray(config.admins) ? config.admins : [];
+        const admins = new Set([owner, ...extraAdmins]);
+        return Array.from(admins);
+    } catch (e) {
+        return [owner];
+    }
 }
 
 if (require.main === module) {

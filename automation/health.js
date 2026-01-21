@@ -64,6 +64,12 @@ async function main() {
                 await GitHubAPI.removeLabel(data.id, 'status:active');
                 await GitHubAPI.removeLabel(data.id, 'status:warning');
                 await GitHubAPI.addLabels(data.id, ['status:broken']);
+
+                // 通知管理员 | Notify Admins
+                const admins = getAdmins();
+                const mention = admins.map(a => `@${a}`).join(' ');
+                const message = `${mention}\n\n⚠️ **站点检测异常** | Site health check failed.\n\n该站点已连续 3 次探测失败，状态已变更为 \`broken\`。请检查站点是否可用并决定是否保留。\nThis site has failed 3 consecutive checks and status has been set to \`broken\`. Please check the site availability.`;
+                await GitHubAPI.createComment(data.id, message);
             } else {
                 data.status = 'warning';
                 await GitHubAPI.removeLabel(data.id, 'status:active');
@@ -75,6 +81,18 @@ async function main() {
     }
 
     Logger.success("Health check complete.");
+}
+
+function getAdmins() {
+    const owner = process.env.GITHUB_REPOSITORY.split('/')[0];
+    try {
+        const config = JSON.parse(fs.readFileSync(path.join(__dirname, '../config/config.json'), 'utf8'));
+        const extraAdmins = Array.isArray(config.admins) ? config.admins : [];
+        const admins = new Set([owner, ...extraAdmins]);
+        return Array.from(admins);
+    } catch (e) {
+        return [owner];
+    }
 }
 
 if (require.main === module) {

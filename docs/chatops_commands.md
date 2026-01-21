@@ -83,6 +83,26 @@
 /close 已经在其他 Issue 中处理
 ```
 
+## 4. 恢复命令
+
+### `/active`
+
+**用途**：手动将站点或分类的状态恢复为 `active`。
+
+**适用场景**：
+- 被 `health.js` 误判为 `broken` 的站点在修复后需快速上线。
+- 手动撤销 `/reject` 或 `/close` 操作（如果对应文件仍存在）。
+
+**执行效果**：
+1. 移除 `status:broken`、`status:warning` 或 `triage` 标签。
+2. 添加 `status:active` 标签。
+3. 更新对应的本地 JSON 数据文件，将其 `status` 设为 `active`。
+
+**使用示例**：
+```
+/active
+```
+
 ---
 
 ## 命令执行流程
@@ -97,10 +117,12 @@ graph TD
     F --> G{命令类型}
     G -->|/approve| H[执行批准逻辑]
     G -->|/reject| I[执行拒绝逻辑]
+    G -->|/active| P[执行激活逻辑]
     G -->|/close| J[执行关闭逻辑]
     G -->|未知| K[返回错误]
     H --> L[更新 Issue & 数据]
     I --> L
+    P --> L
     J --> L
     L --> M[回复确认消息]
 ```

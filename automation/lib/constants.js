@@ -13,6 +13,7 @@ module.exports = {
     COMMANDS: {
         APPROVE: '/approve',
         REJECT: '/reject',
-        CLOSE: '/close'
+        CLOSE: '/close',
+        RESTORE: '/active'
     }
 };
