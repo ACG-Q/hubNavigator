@@ -160,6 +160,8 @@ async function approveMerge(issue) {
         if (changed) {
             fs.writeFileSync(targetPath, JSON.stringify(data, null, 2));
 
+            Logger.info(`Updated ${targetPath} with new data: ${JSON.stringify(data)}`);
+
             // 重要：清理修正申请生成的临时 JSON 文件
             await processSiteIssue(issue, 'closed');
 

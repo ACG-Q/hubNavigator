@@ -22,7 +22,10 @@ jobs:
           fetch-depth: 0
 
       - name: Update to latest
-        run: git pull origin ${{ github.ref_name }}
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git pull origin master --rebase
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
