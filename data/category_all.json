@@ -198,5 +198,13 @@
     "icon": "☕",
     "description": "摸鱼、游戏、购物、旅行",
     "desc_en": "Hobbies, games, shopping, travel"
+  },
+  {
+    "id": "test_2",
+    "name": "测试2",
+    "name_en": "Test2",
+    "description": "测试2",
+    "desc_en": "Test2",
+    "status": "active"
   }
 ]
