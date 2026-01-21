@@ -4,18 +4,32 @@
     "name": "测试2",
     "url": "https://translate.google.com/",
     "categories": [
+      "ai-chat",
+      "ai-audio-video",
       "ai-drawing",
+      "ai-dev",
       "dev-frontend",
+      "dev-backend",
+      "dev-tools",
       "dev-resources",
-      "web3-crypto",
+      "design-assets",
+      "design-icons",
       "design-color",
-      "video-tools"
+      "design-tools",
+      "image-tools",
+      "video-tools",
+      "product-ops",
+      "indie-maker",
+      "efficiency",
+      "resource-site",
+      "read-news",
+      "lifestyle"
     ],
     "cover": "",
-    "description": "test2",
+    "description": "测试更正3",
     "status": "active",
     "added_at": "2026-01-20",
-    "last_check": "2026-01-21 12:03",
+    "last_check": "2026-01-21 12:18",
     "fail_count": 0
   },
   {
@@ -34,7 +48,7 @@
     "description": "测试4",
     "status": "active",
     "added_at": "2026-01-20",
-    "last_check": "2026-01-21 12:03",
+    "last_check": "2026-01-21 12:18",
     "fail_count": 0
   }
 ]
