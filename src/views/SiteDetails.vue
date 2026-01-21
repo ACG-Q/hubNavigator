@@ -50,8 +50,7 @@ const reportIssueUrl = computed(() => {
   const baseUrl = `https://github.com/${GlobalConfig.repo}/issues/new`
   const params = new URLSearchParams({
     template: 'site_correction.yml',
-    site_id: site.value.id, // Pre-fill site ID if possible
-    name: site.value.name,
+    site_id: site.value.id,
     url: site.value.url
   })
   return `${baseUrl}?${params.toString()}`

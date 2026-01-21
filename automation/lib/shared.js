@@ -5,8 +5,8 @@
 const { LABELS } = require('./constants');
 
 const FIELD_MAP = {
-    "站点名称": "site_name",
     "站点名称 (Name)": "site_name",
+    "站点 ID (Site ID)": "site_id",
     "站点链接": "site_url",
     "站点链接 (URL)": "site_url",
     "新站点链接": "new_site_url",
