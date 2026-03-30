@@ -12,8 +12,8 @@
   ],
   "cover": "",
   "description": "测试4",
-  "status": "warning",
+  "status": "active",
   "added_at": "2026-01-20",
-  "last_check": "2026-03-30 14:24",
-  "fail_count": 2
+  "last_check": "2026-03-30 15:48",
+  "fail_count": 0
 }
