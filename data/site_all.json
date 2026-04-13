@@ -29,7 +29,7 @@
     "description": "测试更正3",
     "status": "active",
     "added_at": "2026-01-20",
-    "last_check": "2026-04-13 11:01",
+    "last_check": "2026-04-13 12:12",
     "fail_count": 0
   },
   {
@@ -46,9 +46,9 @@
     ],
     "cover": "",
     "description": "测试4",
-    "status": "active",
+    "status": "warning",
     "added_at": "2026-01-20",
-    "last_check": "2026-04-13 11:01",
-    "fail_count": 0
+    "last_check": "2026-04-13 12:12",
+    "fail_count": 1
   }
 ]
